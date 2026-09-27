@@ -1,419 +1,293 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTT Road News - ระบบแจ้งปัญหาจราจรภายในองค์กร</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Leaflet CSS & JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        #map { height: 450px; }
-        .active-tab { border-bottom: 3px solid #16a34a; color: #16a34a; font-weight: bold; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบแจ้งปัญหาจราจร / เส้นทาง</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen">
 
-    <!-- Header Navigation -->
-    <header class="bg-emerald-800 text-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="bg-white p-2 rounded-full text-emerald-800 shadow">
-                    <i class="fa-solid fa-building-circle-exclamation text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold leading-none">TTT Road News</h1>
-                    <p class="text-xs text-emerald-200 mt-1">ระบบแจ้งปัญหาจราจรและเส้นทางภายในองค์กร</p>
-                </div>
+  <!-- Header / Navbar -->
+  <header class="bg-emerald-800 text-white shadow-md p-4">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold flex items-center gap-2">
+        <i class="fa-solid fa-traffic-light"></i> ระบบแจ้งปัญหาจราจร / เส้นทาง
+      </h1>
+      <div class="flex items-center gap-3">
+        <span class="text-sm">
+          <i class="fa-solid fa-user"></i> สิทธิ์: ผู้ใช้ทั่วไป[cite: 3]
+        </span>
+        <button onclick="toggleAdminLogin()" id="adminBtn" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1 transition">[cite: 3]
+          <i class="fa-solid fa-lock"></i> เข้าสู่ระบบแอดมิน[cite: 3]
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="bg-white text-gray-600 shadow-inner p-3">[cite: 3]
+    <div class="max-w-6xl mx-auto flex gap-4 text-sm font-semibold">
+      <button onclick="switchTab('report-tab')" class="text-emerald-700 border-b-2 border-emerald-700 pb-1">
+        ฟอร์มแจ้งปัญหา[cite: 3]
+      </button>
+      <button onclick="switchTab('list-tab')" class="hover:text-emerald-700 pb-1">
+        รายการแจ้งเตือนทั้งหมด
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="max-w-6xl mx-auto p-4 md:p-6">
+
+    <!-- TAB: ฟอร์มแจ้งปัญหาใหม่ -->
+    <div id="report-tab" class="tab-content">[cite: 3]
+      <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-md border border-gray-200">[cite: 3]
+        <h2 class="text-2xl font-bold text-emerald-800 mb-1">ฟอร์มแจ้งปัญหาจราจร / เส้นทาง</h2>[cite: 3]
+        <p class="text-gray-500 text-sm mb-6">ผู้ใช้ทุกคนสามารถกรอกแจ้งปัญหาเพื่อแจ้งเตือนพนักงานในองค์กรได้</p>[cite: 3]
+
+        <form id="trafficReportForm" onsubmit="handleFormSubmit(event)" class="space-y-4">[cite: 3]
+          
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">ชื่อองค์กร / บริษัท</label>
+            <input type="text" id="companyName" required placeholder="เช่น บริษัท ตัวอย่าง จำกัด" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">ผู้แจ้งเรื่อง</label>
+            <input type="text" id="reporterName" required placeholder="ชื่อของคุณ" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-bold text-gray-700 mb-1">สถานะ</label>
+              <select id="issueStatus" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                <option value="แจ้งเตือน (รอแก้ไข)">แจ้งเตือน (รอแก้ไข)</option>
+                <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+                <option value="แก้ไขแล้ว">แก้ไขแล้ว</option>
+              </select>
             </div>
-            
-            <div class="flex items-center gap-2">
-                <!-- แสดงสถานะ Role สิทธิ์ผู้ใช้งาน -->
-                <span id="roleBadge" class="text-xs bg-emerald-900 text-emerald-200 px-3 py-1.5 rounded-full font-medium flex items-center gap-1 border border-emerald-700">
-                    <i class="fa-solid fa-user"></i> สิทธิ์: ผู้ใช้ทั่วไป
-                </span>
-                <button onclick="toggleAdminLogin()" id="adminBtn" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1">
-                    <i class="fa-solid fa-lock"></i> เข้าสู่ระบบแอดมิน
-                </button>
+            <div>
+              <label class="block text-sm font-bold text-gray-700 mb-1">ประเภทปัญหา</label>
+              <select id="symbolType" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                <option value="ก่อสร้าง">ก่อสร้าง</option>
+                <option value="น้ำท่วม">น้ำท่วม</option>
+                <option value="อุบัติเหตุ">อุบัติเหตุ</option>
+                <option value="การจราจรติดขัด">การจราจรติดขัด</option>
+              </select>
             </div>
-        </div>
-        
-        <nav class="bg-white text-gray-600 shadow-inner">
-            <div class="max-w-7xl mx-auto flex overflow-x-auto text-sm sm:text-base border-b">
-                <button onclick="switchTab('feed-tab')" id="btn-feed-tab" class="active-tab px-5 py-3 whitespace-nowrap focus:outline-none flex items-center space-x-2">
-                    <i class="fa-solid fa-list-check text-emerald-600"></i> <span>รายการปัญหาทั้งหมด</span>
-                </button>
-                <button onclick="switchTab('report-tab')" id="btn-report-tab" class="px-5 py-3 whitespace-nowrap focus:outline-none flex items-center space-x-2">
-                    <i class="fa-solid fa-pen-to-square text-amber-500"></i> <span>+ แจ้งปัญหาใหม่</span>
-                </button>
-                <button onclick="switchTab('map-tab')" id="btn-map-tab" class="px-5 py-3 whitespace-nowrap focus:outline-none flex items-center space-x-2">
-                    <i class="fa-solid fa-map-pin text-red-500"></i> <span>แผนที่จุดเกิดเหตุ</span>
-                </button>
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">สถานที่ / พิกัดโดยสังเขป</label>
+            <input type="text" id="locationName" required placeholder="เช่น หน้าโรงงานบางปะอิน, ถนนพหลโยธิน กม.45" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">[cite: 4]
+          </div>
+
+          <!-- ลิงก์ Google Maps -->
+          <div>[cite: 4]
+            <label class="block text-sm font-bold text-gray-700 mb-1">[cite: 4]
+              <i class="fa-solid fa-map-location-dot text-red-500"></i> ลิงก์ Google Maps (ถ้ามี)[cite: 4]
+            </label>[cite: 4]
+            <input type="url" id="googleMapsUrl" placeholder="วางลิงก์ Google Maps เช่น https://maps.app.goo.gl/..." class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">[cite: 4]
+          </div>[cite: 4]
+
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">รายละเอียดเพิ่มเติม</label>
+            <textarea id="issueDetails" rows="3" placeholder="ระบุรายละเอียด เช่น ปิดการจราจร 1 ช่องทาง..." class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+          </div>
+
+          <!-- รูปภาพประกอบ -->
+          <div>[cite: 4]
+            <label class="block text-sm font-bold text-gray-700 mb-1">รูปภาพประกอบปัญหา</label>[cite: 4]
+            <input type="file" id="imageFile" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 mb-2">[cite: 4]
+            <input type="url" id="imageUrl" placeholder="หรือใส่ URL รูปภาพ" class="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow transition">
+            <i class="fa-solid fa-paper-plane mr-1"></i> ส่งข้อมูลแจ้งเหตุ
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB: รายการแจ้งเตือนทั้งหมด -->
+    <div id="list-tab" class="tab-content hidden">
+      <div id="reportList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Cards จะถูกสร้างผ่าน JavaScript -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- JavaScript Code -->
+  <script>
+    let markers = {};[cite: 5]
+    let currentLat = 13.7563;[cite: 5]
+    let currentLng = 100.5018;[cite: 5]
+
+    // รหัสผ่านแอดมิน (สามารถแก้ไขรหัสผ่านได้ตรงนี้)[cite: 5]
+    const ADMIN_PASSWORD = "admin";[cite: 5]
+    let isAdmin = false;[cite: 5]
+
+    // ข้อมูลตัวอย่างเริ่มต้น[cite: 5]
+    const defaultData = [[cite: 5]
+      {
+        id: "item_1",
+        company: "โตโยต้า ทรานสปอร์ต",
+        reporter: "เจ้าหน้าที่จราจร",
+        status: "แจ้งเตือน (รอแก้ไข)",[cite: 5]
+        symbol: "ก่อสร้าง",[cite: 5]
+        location: "ถนนพหลโยธิน กม.32 ขาออก",[cite: 5]
+        gmapsUrl: "https://maps.google.com/?q=14.120,100.610",[cite: 5]
+        imgUrl: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop",[cite: 5]
+        details: "ซ่อมบำรุงพื้นผิวถนน ปิดการจราจรช่องทางขวาสุด 1 ช่องทาง",[cite: 5]
+        time: "10 นาทีที่แล้ว"[cite: 5]
+      },
+      {
+        id: "item_2",
+        company: "ศูนย์โลจิสติกส์",
+        reporter: "รปภ. ประตู 2",
+        status: "กำลังดำเนินการ",[cite: 5]
+        symbol: "น้ำท่วม",[cite: 5]
+        location: "หน้าทางเข้าโรงงานประตู 2",[cite: 5]
+        gmapsUrl: "https://maps.google.com/?q=13.890,100.565",[cite: 5]
+        imgUrl: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=800&auto=format&fit=crop",[cite: 5]
+        details: "น้ำท่วมขังสูงประมาณ 10 ซม. เจ้าหน้าที่กำลังเร่งสูบน้ำออก",[cite: 5]
+        time: "30 นาทีที่แล้ว"[cite: 5]
+      }
+    ];
+
+    // สลับหน้า Tab
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+      if (tabId === 'list-tab') {
+        loadReports();
+      }
+    }
+
+    // ฟังก์ชันเข้าสู่ระบบ Admin
+    function toggleAdminLogin() {
+      if (!isAdmin) {
+        const pass = prompt("กรุณากรอกรหัสผ่านแอดมิน:");
+        if (pass === ADMIN_PASSWORD) {
+          isAdmin = true;
+          alert("เข้าสู่ระบบแอดมินสำเร็จ");
+          document.getElementById('adminBtn').innerHTML = `<i class="fa-solid fa-unlock"></i> ออกจากระบบแอดมิน`;
+          document.getElementById('adminBtn').className = "bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1 transition";
+          loadReports();
+        } else if (pass !== null) {
+          alert("รหัสผ่านไม่ถูกต้อง!");
+        }
+      } else {
+        isAdmin = false;
+        alert("ออกจากระบบแอดมินเรียบร้อย");
+        document.getElementById('adminBtn').innerHTML = `<i class="fa-solid fa-lock"></i> เข้าสู่ระบบแอดมิน`;
+        document.getElementById('adminBtn').className = "bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1 transition";
+        loadReports();
+      }
+    }
+
+    // โหลดและแสดงรายการการ์ดแจ้งเตือน
+    function loadReports() {[cite: 6]
+      const saved = localStorage.getItem('company_traffic_reports');[cite: 6]
+      const data = saved ? JSON.parse(saved) : defaultData;[cite: 6]
+      const container = document.getElementById('reportList');
+      if (!container) return;
+
+      container.innerHTML = data.map(item => {
+        let statusBadge = "bg-amber-100 text-amber-800 border-amber-300";[cite: 6]
+        if (item.status === 'กำลังดำเนินการ') statusBadge = "bg-amber-100 text-amber-800 border-amber-300";[cite: 6]
+        if (item.status === 'แก้ไขแล้ว') statusBadge = "bg-emerald-100 text-emerald-800 border-emerald-300";[cite: 6]
+
+        // ปุ่ม Google Maps (ถ้ามีลิงก์)[cite: 6]
+        const gmapsBtn = item.gmapsUrl ?[cite: 6]
+          `<a href="${item.gmapsUrl}" target="_blank" class="inline-flex items-center gap-1 text-xs bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 px-2 py-1 rounded font-bold transition">[cite: 6]
+            <i class="fa-solid fa-map-location-dot text-red-500"></i> นำทาง Google Maps[cite: 6]
+          </a>` : '';[cite: 6]
+
+        // ปุ่มลบรายการ (แสดงเฉพาะสิทธิ์ Admin)
+        const deleteBtn = isAdmin ? 
+          `<button onclick="deleteReport('${item.id}')" class="text-xs text-red-500 hover:text-red-700 font-bold ml-1 px-1">
+            <i class="fa-solid fa-trash"></i>
+          </button>` : '';
+
+        return `
+          <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-200 border border-gray-100 flex flex-col">[cite: 7]
+            <div class="p-3 border-b flex items-center justify-between bg-gray-50">[cite: 7]
+              <span class="text-xs font-bold text-gray-700"><i class="fa-solid fa-building mr-1 text-emerald-700"></i> ${item.company || 'ไม่ระบุองค์กร'}</span>[cite: 7]
+              <div class="flex items-center gap-1">[cite: 7]
+                <span class="text-[11px] px-2 py-0.5 rounded border font-bold ${statusBadge}">[cite: 7]
+                  ${item.status}[cite: 7]
+                </span>[cite: 7]
+                ${deleteBtn}[cite: 7]
+              </div>[cite: 7]
+            </div>[cite: 7]
+            ${item.imgUrl ? `<div class="relative h-44 bg-gray-100"><img src="${item.imgUrl}" class="w-full h-full object-cover"></div>` : ''}[cite: 7]
+            <div class="p-4 flex-1 flex flex-col justify-between">
+              <div>
+                <p class="text-xs text-gray-500 my-1"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i><strong>สถานที่:</strong> ${item.location}</p>[cite: 7, 8]
+                <p class="text-sm text-gray-700 leading-relaxed mb-3">${item.details || 'ไม่มีรายละเอียดเพิ่มเติม'}</p>
+              </div>
+              <div class="pt-2 border-t flex justify-between items-center">
+                <span class="text-[11px] text-gray-400">${item.time || 'เมื่อสักครู่'}</span>
+                ${gmapsBtn}
+              </div>
             </div>
-        </nav>
-    </header>
+          </div>
+        `;
+      }).join('');
+    }
 
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4">
+    // ฟังก์ชันส่งฟอร์มข้อมูลใหม่
+    function handleFormSubmit(event) {
+      event.preventDefault();
 
-        <!-- TAB 1: รายการปัญหาทั้งหมด -->
-        <div id="feed-tab" class="tab-content block">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                    <i class="fa-solid fa-bullhorn text-emerald-600 mr-2"></i> รายการปัญหาที่ถูกแจ้งเข้ามา
-                </h2>
-                <span id="report-count" class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-bold">
-                    0 รายการ
-                </span>
-            </div>
+      const company = document.getElementById('companyName').value;
+      const reporter = document.getElementById('reporterName').value;
+      const status = document.getElementById('issueStatus').value;[cite: 9]
+      const symbol = document.getElementById('symbolType').value;[cite: 9]
+      const location = document.getElementById('locationName').value;[cite: 9]
+      const gmapsUrl = document.getElementById('googleMapsUrl').value;[cite: 9]
+      const details = document.getElementById('issueDetails').value;[cite: 9]
+      const imageUrlInput = document.getElementById('imageUrl').value;[cite: 9]
 
-            <div id="reports-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- การ์ดรายการปัญหาจะแสดงผลที่นี่ -->
-            </div>
-        </div>
+      const newItem = {[cite: 9]
+        id: "item_" + Date.now(),[cite: 9]
+        company, reporter, status, symbol, location, gmapsUrl, details,[cite: 9]
+        imgUrl: imageUrlInput || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop",[cite: 9]
+        time: "เมื่อสักครู่",[cite: 9]
+        lat: currentLat,[cite: 9]
+        lng: currentLng
+      };
 
-        <!-- TAB 2: ฟอร์มแจ้งปัญหาใหม่ (5 ข้อมูลหลัก + ลิงก์ Google Maps) -->
-        <div id="report-tab" class="tab-content hidden">
-            <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                <h2 class="text-2xl font-bold text-emerald-800 mb-1">ฟอร์มแจ้งปัญหาจราจร / เส้นทาง</h2>
-                <p class="text-gray-500 text-sm mb-6">ผู้ใช้ทุกคนสามารถกรอกแจ้งปัญหาเพื่อแจ้งเตือนพนักงานในองค์กรได้</p>
+      const saved = localStorage.getItem('company_traffic_reports');
+      const data = saved ? JSON.parse(saved) : [...defaultData];
+      data.unshift(newItem);
+      
+      localStorage.setItem('company_traffic_reports', JSON.stringify(data));
+      alert('บันทึกข้อมูลแจ้งปัญหาเรียบร้อยแล้ว');
+      
+      document.getElementById('trafficReportForm').reset();
+      switchTab('list-tab');
+    }
 
-                <form id="trafficReportForm" onsubmit="handleFormSubmit(event)">
-                    <div class="space-y-4">
-                        
-                        <!-- 1. ชื่อบริษัท -->
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">1. ชื่อบริษัท / หน่วยงาน <span class="text-red-500">*</span></label>
-                            <input type="text" id="companyName" required placeholder="เช่น บริษัท โตโยต้า ทรานสปอร์ต จำกัด" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                        </div>
+    // ฟังก์ชันลบรายการ (เฉพาะ Admin)
+    function deleteReport(id) {
+      if (!isAdmin) return;
+      if (confirm('คุณต้องการลบรายการนี้ใช่หรือไม่?')) {
+        const saved = localStorage.getItem('company_traffic_reports');
+        let data = saved ? JSON.parse(saved) : [...defaultData];
+        data = data.filter(item => item.id !== id);
+        localStorage.setItem('company_traffic_reports', JSON.stringify(data));
+        loadReports();
+      }
+    }
 
-                        <!-- 2. ชื่อคนเจอ -->
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">2. ชื่อผู้พบเห็น / ผู้แจ้งเหตุ <span class="text-red-500">*</span></label>
-                            <input type="text" id="reporterName" required placeholder="เช่น คุณชีน, ฝ่ายขนส่ง" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                        </div>
-
-                        <!-- 3. สถานะ & 5. สัญลักษณ์ประเภทปัญหา -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">3. สถานะปัญหา <span class="text-red-500">*</span></label>
-                                <select id="issueStatus" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                                    <option value="แจ้งเตือน (รอแก้ไข)">⚠️ แจ้งเตือน (รอแก้ไข)</option>
-                                    <option value="กำลังดำเนินการ">🔄 กำลังดำเนินการ</option>
-                                    <option value="แก้ไขแล้ว">✅ แก้ไขแล้ว</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">5. สัญลักษณ์ประเภทปัญหา <span class="text-red-500">*</span></label>
-                                <select id="symbolType" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                                    <option value="ก่อสร้าง">🏗️ งานก่อสร้าง / ซ่อมถนน</option>
-                                    <option value="ต้นไม้">🌳 ต้นไม้ล้ม / กิ่งไม้กีดขวาง</option>
-                                    <option value="น้ำท่วม">🌊 น้ำท่วมขัง / รอการระบาย</option>
-                                    <option value="อุบัติเหตุ">💥 อุบัติเหตุทางถนน</option>
-                                    <option value="ถนนชำรุด">🛠️ ถนนเป็นหลุมเป็นบ่อ / ชำรุด</option>
-                                    <option value="อื่นๆ">⚠️ ปัญหาอื่นๆ</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- สถานที่เกิดเหตุ -->
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">สถานที่เกิดเหตุ / จุดสังเกต <span class="text-red-500">*</span></label>
-                            <input type="text" id="locationName" required placeholder="เช่น หน้าโรงงานบางปะอิน, ถนนพหลโยธิน กม.45" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                        </div>
-
-                        <!-- ลิงก์ Google Maps -->
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">
-                                <i class="fa-solid fa-map-location-dot text-red-500"></i> ลิงก์ Google Maps (ถ้ามี)
-                            </label>
-                            <input type="url" id="googleMapsUrl" placeholder="วางลิงก์ Google Maps เช่น https://maps.app.goo.gl/..." class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                        </div>
-
-                        <!-- 4. รูปภาพ -->
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">4. รูปภาพประกอบปัญหา</label>
-                            <input type="file" id="imageFile" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 mb-2">
-                            <input type="url" id="imageUrl" placeholder="หรือวางลิงก์รูปภาพ (URL)" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                        </div>
-
-                        <!-- รายละเอียดเพิ่มเติม -->
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">รายละเอียดปัญหาเพิ่มเติม</label>
-                            <textarea id="issueDetails" rows="3" placeholder="ระบุรายละเอียด เช่น ช่องทางที่กีดขวาง หรือคำแนะนำเลี่ยงเส้นทาง..." class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
-                        </div>
-
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition duration-200">
-                            <i class="fa-solid fa-paper-plane mr-2"></i> บันทึกข้อมูลและแจ้งปัญหา
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- TAB 3: แผนที่แสดงจุดเกิดเหตุ -->
-        <div id="map-tab" class="tab-content hidden">
-            <div class="bg-white rounded-xl shadow p-2 relative">
-                <div id="map" class="rounded-lg"></div>
-            </div>
-        </div>
-
-    </main>
-
-    <footer class="bg-gray-800 text-gray-400 text-xs text-center py-4 mt-auto">
-        <p>TTT Road News - ระบบแจ้งและติดตามปัญหาจราจรภายในองค์กร</p>
-    </footer>
-
-    <script>
-        let map;
-        let markers = {};
-        let currentLat = 13.7563;
-        let currentLng = 100.5018;
-        
-        // รหัสผ่านแอดมิน (สามารถแก้ไขรหัสผ่านได้ตรงนี้)
-        const ADMIN_PASSWORD = "admin";
-        let isAdmin = false;
-
-        // ข้อมูลตัวอย่างเริ่มต้น
-        const defaultData = [
-            {
-                id: "item_1",
-                company: "บริษัท โตโยต้า ทรานสปอร์ต จำกัด",
-                reporter: "คุณชีน",
-                status: "แจ้งเตือน (รอแก้ไข)",
-                symbol: "ก่อสร้าง",
-                location: "ถนนพหลโยธิน กม.32 ขาออก",
-                gmapsUrl: "https://maps.google.com/?q=14.120,100.610",
-                imgUrl: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop",
-                details: "ซ่อมบำรุงพื้นผิวถนน ปิดการจราจรช่องทางขวาสุด 1 ช่องทาง",
-                time: "10 นาทีที่แล้ว",
-                lat: 14.120, lng: 100.610
-            },
-            {
-                id: "item_2",
-                company: "บริษัท โตโยต้า ทรานสปอร์ต จำกัด",
-                reporter: "ฝ่ายความปลอดภัย (SHE)",
-                status: "กำลังดำเนินการ",
-                symbol: "น้ำท่วม",
-                location: "หน้าทางเข้าโรงงานประตู 2",
-                gmapsUrl: "https://maps.google.com/?q=13.890,100.565",
-                imgUrl: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=800&auto=format&fit=crop",
-                details: "น้ำท่วมขังสูงประมาณ 10 ซม. เจ้าหน้าที่กำลังเร่งสูบน้ำออก",
-                time: "30 นาทีที่แล้ว",
-                lat: 13.890, lng: 100.565
-            }
-        ];
-
-        document.addEventListener("DOMContentLoaded", () => {
-            initMap();
-            loadReports();
-        });
-
-        // สลับเข้าสู่ระบบแอดมิน
-        function toggleAdminLogin() {
-            if (!isAdmin) {
-                const pass = prompt("กรุณาใส่รหัสผ่านแอดมิน/เจ้าของระบบ:");
-                if (pass === ADMIN_PASSWORD) {
-                    isAdmin = true;
-                    document.getElementById('roleBadge').innerHTML = `<i class="fa-solid fa-user-shield text-amber-300"></i> สิทธิ์: เจ้าของระบบ (แอดมิน)`;
-                    document.getElementById('roleBadge').className = "text-xs bg-amber-900 text-amber-200 px-3 py-1.5 rounded-full font-bold flex items-center gap-1 border border-amber-500";
-                    document.getElementById('adminBtn').innerHTML = `<i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ`;
-                    document.getElementById('adminBtn').className = "bg-gray-600 hover:bg-gray-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1";
-                    alert("เข้าสู่ระบบแอดมินเรียบร้อยแล้วค่ะ! คุณสามารถลบหรือจัดการรายการได้แล้วค่ะ");
-                    loadReports();
-                } else if (pass !== null) {
-                    alert("รหัสผ่านไม่ถูกต้อง!");
-                }
-            } else {
-                isAdmin = false;
-                document.getElementById('roleBadge').innerHTML = `<i class="fa-solid fa-user"></i> สิทธิ์: ผู้ใช้ทั่วไป`;
-                document.getElementById('roleBadge').className = "text-xs bg-emerald-900 text-emerald-200 px-3 py-1.5 rounded-full font-medium flex items-center gap-1 border border-emerald-700";
-                document.getElementById('adminBtn').innerHTML = `<i class="fa-solid fa-lock"></i> เข้าสู่ระบบแอดมิน`;
-                document.getElementById('adminBtn').className = "bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1";
-                loadReports();
-            }
-        }
-
-        function initMap() {
-            map = L.map('map').setView([14.0000, 100.6000], 8);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
-        }
-
-        function loadReports() {
-            const saved = localStorage.getItem('company_traffic_reports');
-            const data = saved ? JSON.parse(saved) : defaultData;
-            
-            document.getElementById('report-count').innerText = `${data.length} รายการ`;
-            const grid = document.getElementById('reports-grid');
-            
-            Object.values(markers).forEach(m => map.removeLayer(m));
-            markers = {};
-
-            grid.innerHTML = data.map(item => {
-                const defaultImg = "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800&auto=format&fit=crop";
-                const displayImg = item.imgUrl || defaultImg;
-
-                let iconClass = "fa-solid fa-triangle-exclamation text-amber-500";
-                if(item.symbol === 'ก่อสร้าง') iconClass = "fa-solid fa-helmet-safety text-amber-600";
-                if(item.symbol === 'ต้นไม้') iconClass = "fa-solid fa-tree text-emerald-600";
-                if(item.symbol === 'น้ำท่วม') iconClass = "fa-solid fa-water text-cyan-600";
-                if(item.symbol === 'อุบัติเหตุ') iconClass = "fa-solid fa-car-burst text-red-600";
-                if(item.symbol === 'ถนนชำรุด') iconClass = "fa-solid fa-screwdriver-wrench text-gray-700";
-
-                let statusBadge = "bg-red-100 text-red-800 border-red-300";
-                if(item.status === 'กำลังดำเนินการ') statusBadge = "bg-amber-100 text-amber-800 border-amber-300";
-                if(item.status === 'แก้ไขแล้ว') statusBadge = "bg-emerald-100 text-emerald-800 border-emerald-300";
-
-                // ปุ่ม Google Maps (ถ้ามีลิงก์)
-                const gmapsBtn = item.gmapsUrl ? `
-                    <a href="${item.gmapsUrl}" target="_blank" class="inline-flex items-center gap-1 text-xs bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 px-2 py-1 rounded font-bold transition">
-                        <i class="fa-solid fa-map-location-dot text-red-500"></i> นำทาง Google Maps
-                    </a>` : '';
-
-                // ปุ่มลบรายการ (แสดงเฉพาะตอนที่เป็นแอดมิน)
-                const deleteBtn = isAdmin ? `
-                    <button onclick="deleteReport('${item.id}')" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded font-bold shadow flex items-center gap-1">
-                        <i class="fa-solid fa-trash"></i> ลบรายการ
-                    </button>` : '';
-
-                return `
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-200 border border-gray-100 flex flex-col">
-                    <div class="p-3 border-b flex items-center justify-between bg-gray-50">
-                        <span class="text-xs font-bold text-gray-700"><i class="fa-solid fa-building mr-1 text-emerald-700"></i> ${item.company}</span>
-                        <div class="flex items-center gap-1">
-                            <span class="text-[11px] px-2 py-0.5 rounded border font-bold ${statusBadge}">
-                                ${item.status}
-                            </span>
-                            ${deleteBtn}
-                        </div>
-                    </div>
-
-                    <div class="relative h-44 bg-gray-100">
-                        <img src="${displayImg}" class="w-full h-full object-cover">
-                        <span class="absolute top-2 left-2 bg-white/90 text-gray-800 text-xs px-2 py-1 rounded-md font-bold shadow flex items-center gap-1">
-                            <i class="${iconClass}"></i> สัญลักษณ์: ${item.symbol}
-                        </span>
-                    </div>
-
-                    <div class="p-4 flex-1 flex flex-col justify-between">
-                        <div>
-                            <p class="text-xs text-gray-500 mb-1"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i> <strong>สถานที่:</strong> ${item.location}</p>
-                            <p class="text-gray-700 text-sm leading-relaxed mb-3">${item.details || 'ไม่มีรายละเอียดเพิ่มเติม'}</p>
-                            <div class="mb-3">${gmapsBtn}</div>
-                        </div>
-                        
-                        <div class="pt-2 border-t flex items-center justify-between text-xs text-gray-500">
-                            <span><i class="fa-solid fa-user text-emerald-600 mr-1"></i> ผู้แจ้ง: <strong>${item.reporter}</strong></span>
-                            <button onclick="zoomToPin('${item.id}', ${item.lat}, ${item.lng})" class="text-emerald-700 font-bold hover:underline">
-                                <i class="fa-solid fa-map-pin text-red-500"></i> ดูบนแผนที่
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-
-            // ปักหมุดบนแผนที่
-            data.forEach(item => {
-                const marker = L.marker([item.lat, item.lng]).addTo(map)
-                    .bindPopup(`
-                        <div class="p-1 max-w-[200px]">
-                            <strong class="text-emerald-800">${item.company}</strong><br>
-                            <span class="text-xs text-gray-600">ผู้แจ้ง: ${item.reporter}</span><br>
-                            <span class="text-xs font-bold text-amber-700">สัญลักษณ์: ${item.symbol}</span><br>
-                            <span class="text-xs font-bold">สถานะ: ${item.status}</span><br>
-                            <p class="text-xs text-gray-600 my-1">${item.location}</p>
-                            ${item.gmapsUrl ? `<a href="${item.gmapsUrl}" target="_blank" class="text-xs text-red-600 font-bold underline">เปิดใน Google Maps</a>` : ''}
-                        </div>
-                    `);
-                markers[item.id] = marker;
-            });
-        }
-
-        // ลบรายการปัญหา (สำหรับแอดมินเท่านั้น)
-        function deleteReport(id) {
-            if (!isAdmin) return;
-            if (confirm("คุณต้องการลบรายการแจ้งปัญหานี้ใช่หรือไม่?")) {
-                const saved = localStorage.getItem('company_traffic_reports');
-                let list = saved ? JSON.parse(saved) : defaultData;
-                list = list.filter(item => item.id !== id);
-                localStorage.setItem('company_traffic_reports', JSON.stringify(list));
-                loadReports();
-                alert("ลบรายการเรียบร้อยแล้วค่ะ");
-            }
-        }
-
-        function handleFormSubmit(e) {
-            e.preventDefault();
-            const company = document.getElementById('companyName').value;
-            const reporter = document.getElementById('reporterName').value;
-            const status = document.getElementById('issueStatus').value;
-            const symbol = document.getElementById('symbolType').value;
-            const location = document.getElementById('locationName').value;
-            const gmapsUrl = document.getElementById('googleMapsUrl').value;
-            const details = document.getElementById('issueDetails').value;
-            const imageUrlInput = document.getElementById('imageUrl').value;
-            const imageFileInput = document.getElementById('imageFile');
-
-            const saveAndRefresh = (imgUrl) => {
-                const now = new Date();
-                const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} น.`;
-
-                const newItem = {
-                    id: "item_" + Date.now(),
-                    company, reporter, status, symbol, location, gmapsUrl, details,
-                    imgUrl,
-                    time: timeStr,
-                    lat: currentLat,
-                    lng: currentLng
-                };
-
-                const saved = localStorage.getItem('company_traffic_reports');
-                const list = saved ? JSON.parse(saved) : defaultData;
-                list.unshift(newItem);
-                localStorage.setItem('company_traffic_reports', JSON.stringify(list));
-
-                alert("บันทึกการแจ้งปัญหาเข้าสู่ระบบเรียบร้อยแล้วค่ะ!");
-                document.getElementById('trafficReportForm').reset();
-                loadReports();
-                switchTab('feed-tab');
-            };
-
-            if (imageFileInput.files && imageFileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    saveAndRefresh(e.target.result);
-                };
-                reader.readAsDataURL(imageFileInput.files[0]);
-            } else {
-                saveAndRefresh(imageUrlInput);
-            }
-        }
-
-        function zoomToPin(id, lat, lng) {
-            switchTab('map-tab');
-            setTimeout(() => {
-                map.setView([lat, lng], 14);
-                if (markers[id]) markers[id].openPopup();
-            }, 300);
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active-tab'));
-            
-            document.getElementById(tabId).classList.remove('hidden');
-            document.getElementById('btn-' + tabId).classList.add('active-tab');
-
-            if (tabId === 'map-tab' && map) {
-                setTimeout(() => map.invalidateSize(), 200);
-            }
-        }
-    </script>
+    // โหลดข้อมูลครั้งแรก
+    loadReports();
+  </script>
 </body>
 </html>
