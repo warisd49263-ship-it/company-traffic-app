@@ -563,9 +563,6 @@ async function getStoredData() {
     return data.map(mapDbRowToItem);
 }
 
-      try {
-
-        const parsed = JSON.parse(saved);
 
         if (!Array.isArray(parsed)) {
           return [...initialData];
