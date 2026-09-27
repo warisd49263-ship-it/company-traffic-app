@@ -526,7 +526,9 @@
     function getStoredData() {
 
       const saved =
-        localStorage.getItem('company_traffic_reports');
+       supabase
+    .from('traffic_reports')
+    .select(...);
 
       if (!saved) {
 
