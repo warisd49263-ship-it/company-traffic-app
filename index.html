@@ -197,14 +197,14 @@
           <div>
             <label class="block text-sm font-bold text-gray-700 mb-1">
               <i class="fa-solid fa-location-dot text-red-500 mr-1"></i>
-              สถานที่ / พิกัดโดยสังเขป
+              สถานที่ / ชื่อสถานที่ (ใช้ยึดพิกัดหลักที่ 2)
             </label>
 
             <input
               type="text"
               id="locationName"
               required
-              placeholder="เช่น หน้าโรงงานบางปะอิน, ถนนพหลโยธิน กม.45"
+              placeholder="เช่น โรบินสัน ฉะเชิงเทรา, ถนนพหลโยธิน กม.45"
               class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
           </div>
 
@@ -212,17 +212,17 @@
           <div>
             <label class="block text-sm font-bold text-gray-700 mb-1">
               <i class="fa-solid fa-map-location-dot text-red-500 mr-1"></i>
-              ลิงก์ Google Maps (ถ้ามี)
+              ลิงก์ Google Maps (ใช้ยึดพิกัดหลักที่ 1)
             </label>
 
             <input
               type="url"
               id="googleMapsUrl"
-              placeholder="https://maps.app.goo.gl/... หรือ https://maps.google.com/?q=13.690,101.070"
+              placeholder="https://maps.app.goo.gl/... หรือ https://maps.google.com/?q=..."
               class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
 
             <span class="text-xs text-gray-400 mt-1 block">
-              รองรับ URL ที่มี q=lat,lng, @lat,lng, ll=lat,lng หรือพิกัดในลิงก์
+              ระบบจะเลือกพิกัดจากลิงก์นี้ก่อนเป็นอันดับแรกเสมอ
             </span>
           </div>
 
@@ -252,10 +252,6 @@
               id="imageUrl"
               placeholder="https://i.imgur.com/..."
               class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-
-            <span class="text-xs text-gray-400 mt-1 block">
-              * ฝากรูปฟรีได้ที่เว็บ ImgBB, Imgur หรือ Postimages แล้วนำ URL มาวาง
-            </span>
           </div>
 
           <button
@@ -322,7 +318,7 @@
 
             <div class="bg-white rounded-lg shadow px-4 py-3 text-sm font-semibold text-gray-700">
               <i class="fa-solid fa-spinner fa-spin text-emerald-600 mr-2"></i>
-              กำลังโหลดตำแหน่ง...
+              กำลังประมวลผลพิกัดจากลิงก์และชื่อสถานที่...
             </div>
 
           </div>
@@ -418,8 +414,6 @@
         symbol: "น้ำท่วม",
         location: "โรบินสัน ฉะเชิงเทรา",
         gmapsUrl: "https://maps.google.com/?q=13.690,101.070",
-        lat: 13.690,
-        lng: 101.070,
         imgUrl: "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=800&auto=format&fit=crop",
         details: "น้ำท่วมทางเข้า",
         time: "เมื่อสักครู่"
@@ -432,8 +426,6 @@
         symbol: "ก่อสร้าง",
         location: "บางปะอิน อยุธยา",
         gmapsUrl: "https://maps.google.com/?q=14.230,100.580",
-        lat: 14.230,
-        lng: 100.580,
         imgUrl: "",
         details: "ซ่อมแซมผิวจราจร",
         time: "เมื่อสักครู่"
@@ -528,7 +520,7 @@
 
 
     /* =========================================================
-        STORAGE (พร้อม Migration ข้อมูลเก่าที่มีปัญหาเรื่อง reporter)
+        STORAGE
     ========================================================= */
 
     function getStoredData() {
@@ -554,7 +546,6 @@
           return [...initialData];
         }
 
-        // ป้องกันข้อมูลเก่าใน localStorage ที่ไม่มีฟิลด์ reporter
         return parsed.map(item => ({
           ...item,
           reporter: item.reporter || 'ผู้แจ้งทั่วไป',
@@ -574,7 +565,7 @@
 
 
     /* =========================================================
-        GOOGLE MAPS COORDINATE PARSER (ปรับปรุงให้รองรับลิงก์หลายรูปแบบ)
+        GOOGLE MAPS COORDINATE PARSER
     ========================================================= */
 
     function extractCoordinates(url) {
@@ -585,69 +576,44 @@
 
       const value = String(url).trim();
 
-      // 1. ค้นหารูปแบบ ?q= หรือ &q=
       let match = value.match(
         /[?&]q=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
       );
 
       if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
-
-        return {
-          lat: parseFloat(match[1]),
-          lng: parseFloat(match[2])
-        };
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
       }
 
-      // 2. ค้นหารูปแบบ @lat,lng
       match = value.match(
         /@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
       );
 
       if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
-
-        return {
-          lat: parseFloat(match[1]),
-          lng: parseFloat(match[2])
-        };
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
       }
 
-      // 3. ค้นหารูปแบบ ll=
       match = value.match(
         /[?&]ll=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
       );
 
       if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
-
-        return {
-          lat: parseFloat(match[1]),
-          lng: parseFloat(match[2])
-        };
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
       }
 
-      // 4. ค้นหาพิกัดคู่ตัวเลขใน URL ทั่วไป (เช่น /13.xxxx,100.xxxx/)
       match = value.match(
         /(-?[1-8]?\d\.\d{4,}),\s*(-?(?:1[0-7]\d|0?\d?\d)\.\d{4,})/
       );
 
       if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
-
-        return {
-          lat: parseFloat(match[1]),
-          lng: parseFloat(match[2])
-        };
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
       }
 
-      // 5. พิกัดแบบตรงตัว lat,lng
       match = value.match(
         /^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/
       );
 
       if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
-
-        return {
-          lat: parseFloat(match[1]),
-          lng: parseFloat(match[2])
-        };
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
       }
 
       return null;
@@ -672,44 +638,17 @@
 
 
     /* =========================================================
-        GET COORDINATE FOR ITEM
+        GET COORDINATE STRICTLY FROM 2 THINGS:
+        1. Google Maps URL
+        2. Location Name
     ========================================================= */
 
     async function getItemCoordinates(item) {
 
-      if (
-        item.lat !== undefined &&
-        item.lng !== undefined &&
-        item.lat !== null &&
-        item.lng !== null
-      ) {
-
-        const lat = parseFloat(item.lat);
-        const lng = parseFloat(item.lng);
-
-        if (isValidCoordinate(lat, lng)) {
-
-          return {
-            lat,
-            lng,
-            source: "saved"
-          };
-        }
-      }
-
+      // 1. ยึดจาก Link Google Maps ก่อนเป็นอันดับแรก
       if (item.gmapsUrl) {
-
-        const coords =
-          extractCoordinates(item.gmapsUrl);
-
-        if (
-          coords &&
-          isValidCoordinate(coords.lat, coords.lng)
-        ) {
-
-          item.lat = coords.lat;
-          item.lng = coords.lng;
-
+        const coords = extractCoordinates(item.gmapsUrl);
+        if (coords && isValidCoordinate(coords.lat, coords.lng)) {
           return {
             lat: coords.lat,
             lng: coords.lng,
@@ -718,10 +657,9 @@
         }
       }
 
+      // 2. ถัดมา ยึดจากชื่อสถานที่ (Geocoding) หากไม่มี Link หรือดึงพิกัดจาก Link ไม่สำเร็จ
       if (item.location) {
-
         try {
-
           const searchUrl =
             'https://nominatim.openstreetmap.org/search' +
             '?format=json' +
@@ -738,46 +676,25 @@
             }
           });
 
-          if (!response.ok) {
-            throw new Error(
-              `HTTP ${response.status}`
-            );
-          }
+          if (response.ok) {
+            const json = await response.json();
 
-          const json = await response.json();
+            if (Array.isArray(json) && json.length > 0) {
+              const lat = parseFloat(json[0].lat);
+              const lng = parseFloat(json[0].lon);
 
-          if (
-            Array.isArray(json) &&
-            json.length > 0
-          ) {
-
-            const lat =
-              parseFloat(json[0].lat);
-
-            const lng =
-              parseFloat(json[0].lon);
-
-            if (
-              isValidCoordinate(lat, lng)
-            ) {
-
-              item.lat = lat;
-              item.lng = lng;
-
-              return {
-                lat,
-                lng,
-                source: "geocode"
-              };
+              if (isValidCoordinate(lat, lng)) {
+                return {
+                  lat,
+                  lng,
+                  source: "geocode"
+                };
+              }
             }
           }
 
         } catch (error) {
-
-          console.error(
-            "Geocode error:",
-            error
-          );
+          console.error("Geocode error:", error);
         }
       }
 
@@ -991,12 +908,6 @@
 
       event.preventDefault();
 
-      const gmapsUrl =
-        document.getElementById('googleMapsUrl').value.trim();
-
-      const coords =
-        extractCoordinates(gmapsUrl);
-
       const newItem = {
 
         id: "item_" + Date.now(),
@@ -1017,13 +928,7 @@
           document.getElementById('locationName').value.trim(),
 
         gmapsUrl:
-          gmapsUrl,
-
-        lat:
-          coords ? coords.lat : null,
-
-        lng:
-          coords ? coords.lng : null,
+          document.getElementById('googleMapsUrl').value.trim(),
 
         details:
           document.getElementById('issueDetails').value.trim(),
@@ -1045,13 +950,7 @@
         JSON.stringify(data)
       );
 
-      alert(
-        coords
-          ?
-          'บันทึกข้อมูลแจ้งปัญหาเรียบร้อยแล้ว และดึงพิกัดแผนที่สำเร็จ'
-          :
-          'บันทึกข้อมูลแจ้งปัญหาเรียบร้อยแล้ว\n\nหมายเหตุ: ระบบจะค้นหาพิกัดจากชื่อสถานที่เมื่อเปิดแผนที่ภาพรวม'
-      );
+      alert('บันทึกข้อมูลแจ้งปัญหาเรียบร้อยแล้ว ระบบจะประมวลผลตำแหน่งจากลิงก์ Google Maps และชื่อสถานที่บนแผนที่ภาพรวมให้อัตโนมัติค่ะ');
 
       document
         .getElementById('trafficReportForm')
@@ -1320,7 +1219,7 @@
           targetMarker.openPopup();
         }
       } else {
-        alert('ไม่พบพิกัดตำแหน่งของรายการนี้');
+        alert('ไม่พบพิกัดตำแหน่งจากลิงก์ Google Maps หรือชื่อสถานที่ของรายการนี้');
       }
     }
 
