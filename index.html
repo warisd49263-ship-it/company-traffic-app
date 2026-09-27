@@ -379,8 +379,8 @@
     /* =========================================================
         CONFIG
     ========================================================= */
-const SUPABASE_URL = "ใส่ Project URL ตรงนี้";
-const SUPABASE_PUBLISHABLE_KEY = "ใส่ Publishable key ตรงนี้";
+const SUPABASE_URL = "https://gcuxhakupfvsfidraeue.supabase.co/rest/v1/";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_DppyAtoHNP9iCJczTjndLg_TYe6OitA";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -530,22 +530,38 @@ const supabaseClient = window.supabase.createClient(
         STORAGE
     ========================================================= */
 
-    function getStoredData() {
+    function mapDbRowToItem(row) {
+    return {
+        id: String(row.id),
+        company: row.company || 'TTT',
+        reporter: row.reporter || 'ผู้แจ้งทั่วไป',
+        status: row.status || 'แจ้งเตือน (รอแก้ไข)',
+        symbol: row.symbol || 'ก่อสร้าง',
+        location: row.location || 'ไม่ระบุสถานที่',
+        gmapsUrl: row.gmaps_url || '',
+        details: row.details || '',
+        imgUrl: row.img_url || '',
+        time: row.created_at
+            ? new Date(row.created_at).toLocaleString('th-TH')
+            : 'เมื่อสักครู่'
+    };
+}
 
-      const saved =
-       supabase
-    .from('traffic_reports')
-    .select(...);
 
-      if (!saved) {
+async function getStoredData() {
+    const { data, error } = await supabaseClient
+        .from('traffic_reports')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-        localStorage.setItem(
-          'company_traffic_reports',
-          JSON.stringify(initialData)
-        );
+    if (error) {
+        console.error('Supabase Error:', error);
+        alert('ไม่สามารถโหลดข้อมูลจากฐานข้อมูลได้');
+        return [];
+    }
 
-        return [...initialData];
-      }
+    return data.map(mapDbRowToItem);
+}
 
       try {
 
@@ -715,9 +731,11 @@ const supabaseClient = window.supabase.createClient(
         LOAD REPORT CARDS
     ========================================================= */
 
-    function loadReports() {
+   async function loadReports() {
+    const data = await getStoredData();
 
-      const data = getStoredData();
+    // ...
+}
 
       const container =
         document.getElementById('reportList');
