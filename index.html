@@ -134,7 +134,7 @@
           <div>
             <label class="block text-sm font-bold text-gray-700 mb-1">
               <i class="fa-solid fa-user-pen text-emerald-700 mr-1"></i>
-              ผู้แจ้งเรื่อง
+              ผู้แจ้งเรื่อง (คนส่ง)
             </label>
 
             <input
@@ -380,7 +380,7 @@
   <script>
 
     /* =========================================================
-       CONFIG
+        CONFIG
     ========================================================= */
 
     const ADMIN_PASSWORD = "admin";
@@ -406,7 +406,7 @@
 
 
     /* =========================================================
-       INITIAL DATA
+        INITIAL DATA
     ========================================================= */
 
     const initialData = [
@@ -442,7 +442,7 @@
 
 
     /* =========================================================
-       TAB
+        TAB
     ========================================================= */
 
     function switchTab(tabId) {
@@ -480,7 +480,7 @@
 
 
     /* =========================================================
-       ADMIN
+        ADMIN
     ========================================================= */
 
     function toggleAdminLogin() {
@@ -528,7 +528,7 @@
 
 
     /* =========================================================
-       STORAGE
+        STORAGE
     ========================================================= */
 
     function getStoredData() {
@@ -566,7 +566,7 @@
 
 
     /* =========================================================
-       GOOGLE MAPS COORDINATE PARSER
+        GOOGLE MAPS COORDINATE PARSER
     ========================================================= */
 
     function extractCoordinates(url) {
@@ -577,10 +577,6 @@
 
       const value = String(url).trim();
 
-      /*
-        รูปแบบ:
-        https://maps.google.com/?q=13.690,101.070
-      */
       let match = value.match(
         /[?&]q=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
       );
@@ -593,11 +589,6 @@
         };
       }
 
-
-      /*
-        รูปแบบ:
-        https://www.google.com/maps/@13.690,101.070,15z
-      */
       match = value.match(
         /@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
       );
@@ -610,11 +601,6 @@
         };
       }
 
-
-      /*
-        รูปแบบ:
-        ?ll=13.690,101.070
-      */
       match = value.match(
         /[?&]ll=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
       );
@@ -627,11 +613,6 @@
         };
       }
 
-
-      /*
-        รองรับข้อความธรรมดา:
-        13.690,101.070
-      */
       match = value.match(
         /^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/
       );
@@ -649,7 +630,7 @@
 
 
     /* =========================================================
-       VALIDATE COORDINATE
+        VALIDATE COORDINATE
     ========================================================= */
 
     function isValidCoordinate(lat, lng) {
@@ -666,14 +647,10 @@
 
 
     /* =========================================================
-       GET COORDINATE FOR ITEM
+        GET COORDINATE FOR ITEM
     ========================================================= */
 
     async function getItemCoordinates(item) {
-
-      /*
-        1. ใช้ lat/lng ที่บันทึกไว้ก่อน
-      */
 
       if (
         item.lat !== undefined &&
@@ -695,11 +672,6 @@
         }
       }
 
-
-      /*
-        2. อ่านจาก Google Maps URL
-      */
-
       if (item.gmapsUrl) {
 
         const coords =
@@ -709,11 +681,6 @@
           coords &&
           isValidCoordinate(coords.lat, coords.lng)
         ) {
-
-          /*
-            บันทึกพิกัดกลับเข้า localStorage
-            เพื่อไม่ต้อง parse ใหม่ครั้งต่อไป
-          */
 
           item.lat = coords.lat;
           item.lng = coords.lng;
@@ -725,12 +692,6 @@
           };
         }
       }
-
-
-      /*
-        3. ถ้ายังไม่มีพิกัด
-           ใช้ชื่อสถานที่ค้นหา Nominatim
-      */
 
       if (item.location) {
 
@@ -795,17 +756,12 @@
         }
       }
 
-
-      /*
-        4. หาไม่ได้จริง ๆ
-      */
-
       return null;
     }
 
 
     /* =========================================================
-       LOAD REPORT CARDS
+        LOAD REPORT CARDS
     ========================================================= */
 
     function loadReports() {
@@ -819,7 +775,6 @@
         return;
       }
 
-
       if (data.length === 0) {
 
         container.innerHTML = `
@@ -830,7 +785,6 @@
 
         return;
       }
-
 
       container.innerHTML = data.map(item => {
 
@@ -849,7 +803,6 @@
             "bg-blue-100 text-blue-800 border-blue-300";
         }
 
-
         const sym =
           item.symbol || 'ก่อสร้าง';
 
@@ -858,7 +811,6 @@
 
         const pIcon =
           problemIcons[sym] || "⚠️";
-
 
         const mapsButton =
           item.gmapsUrl
@@ -878,7 +830,6 @@
             :
             '';
 
-
         const deleteButton =
           isAdmin
             ?
@@ -895,7 +846,6 @@
             :
             '';
 
-
         const imageBox =
           item.imgUrl
             ?
@@ -911,7 +861,6 @@
             `
             :
             '';
-
 
         return `
           <div
@@ -956,7 +905,17 @@
               ${imageBox}
 
               <!-- Details -->
-              <div class="p-4 space-y-1.5">
+              <div class="p-4 space-y-2">
+
+                <p
+                  class="text-xs text-gray-700 flex items-center gap-1.5 font-medium">
+
+                  <i class="fa-solid fa-user-pen text-emerald-600"></i>
+
+                  <strong>ผู้ส่ง:</strong>
+                  <span class="text-gray-900">${item.reporter || 'ไม่ระบุชื่อ'}</span>
+
+                </p>
 
                 <p
                   class="text-xs text-gray-700 flex items-center gap-1.5 font-medium">
@@ -1000,25 +959,18 @@
 
 
     /* =========================================================
-       FORM SUBMIT
+        FORM SUBMIT
     ========================================================= */
 
     function handleFormSubmit(event) {
 
       event.preventDefault();
 
-
       const gmapsUrl =
         document.getElementById('googleMapsUrl').value.trim();
 
-
-      /*
-        พยายามอ่านพิกัดตั้งแต่ตอนบันทึก
-      */
-
       const coords =
         extractCoordinates(gmapsUrl);
-
 
       const newItem = {
 
@@ -1040,7 +992,6 @@
           document.getElementById('locationName').value.trim(),
 
         gmapsUrl:
-
           gmapsUrl,
 
         lat:
@@ -1059,19 +1010,15 @@
           "เมื่อสักครู่"
       };
 
-
       const data =
         getStoredData();
 
-
       data.unshift(newItem);
-
 
       localStorage.setItem(
         'company_traffic_reports',
         JSON.stringify(data)
       );
-
 
       alert(
         coords
@@ -1081,18 +1028,16 @@
           'บันทึกข้อมูลแจ้งปัญหาเรียบร้อยแล้ว\n\nหมายเหตุ: ระบบยังไม่พบพิกัดจากลิงก์ Google Maps จะพยายามค้นหาจากชื่อสถานที่เมื่อเปิดแผนที่'
       );
 
-
       document
         .getElementById('trafficReportForm')
         .reset();
-
 
       switchTab('list-tab');
     }
 
 
     /* =========================================================
-       DELETE
+        DELETE
     ========================================================= */
 
     function deleteReport(id) {
@@ -1100,7 +1045,6 @@
       if (!isAdmin) {
         return;
       }
-
 
       if (
         confirm(
@@ -1116,19 +1060,12 @@
             item => item.id !== id
           );
 
-
         localStorage.setItem(
           'company_traffic_reports',
           JSON.stringify(data)
         );
 
-
         loadReports();
-
-
-        /*
-          ถ้าแผนที่เปิดอยู่ ให้สร้าง Marker ใหม่
-        */
 
         if (
           overviewMap &&
@@ -1144,7 +1081,7 @@
 
 
     /* =========================================================
-       RENDER MODAL LOCATION LIST
+        RENDER MODAL LOCATION LIST
     ========================================================= */
 
     function renderMapLocationList(data) {
@@ -1153,7 +1090,6 @@
         document.getElementById(
           'modalLocationList'
         );
-
 
       if (data.length === 0) {
 
@@ -1166,7 +1102,6 @@
         return;
       }
 
-
       listContainer.innerHTML =
         data.map(item => {
 
@@ -1178,7 +1113,6 @@
 
           const sIcon =
             statusIcons[item.status] || "📌";
-
 
           return `
             <div
@@ -1202,13 +1136,15 @@
                   สถานะ:
                   ${sIcon} ${item.status || '-'}
                   |
+                  ผู้ส่ง:
+                  <strong class="text-gray-600">${item.reporter || '-'}</strong>
+                  |
                   องค์กร:
                   ${item.company || '-'}
 
                 </span>
 
               </div>
-
 
               <div class="flex items-center gap-1 shrink-0">
 
@@ -1220,7 +1156,6 @@
                   ดูในแผนที่
 
                 </button>
-
 
                 ${
                   item.gmapsUrl
@@ -1251,637 +1186,123 @@
 
 
     /* =========================================================
-       OPEN OVERVIEW MAP
+        OPEN OVERVIEW MAP & MAP LOGIC
     ========================================================= */
 
     async function openOverviewMapModal() {
 
-      const data =
-        getStoredData();
+      const data = getStoredData();
+      const modal = document.getElementById('mapModal');
+      const countElement = document.getElementById('totalMapCount');
+      const loading = document.getElementById('mapLoading');
 
-
-      const modal =
-        document.getElementById('mapModal');
-
-
-      const listContainer =
-        document.getElementById(
-          'modalLocationList'
-        );
-
-
-      const countElement =
-        document.getElementById(
-          'totalMapCount'
-        );
-
-
-      const loading =
-        document.getElementById(
-          'mapLoading'
-        );
-
-
-      countElement.innerText =
-        data.length;
-
-
-      /*
-        เปิด Modal ก่อนเสมอ
-        แก้ปัญหาเดิมที่ data.length === 0
-        แล้ว Modal ไม่เปิด
-      */
+      countElement.innerText = data.length;
 
       modal.classList.remove('hidden');
-
+      loading.classList.remove('hidden');
 
       renderMapLocationList(data);
 
-
-      /*
-        ถ้าไม่มีข้อมูล
-      */
-
-      if (data.length === 0) {
-
-        if (overviewMap) {
-          overviewMap.invalidateSize();
-        }
-
-        return;
-      }
-
-
-      loading.classList.remove('hidden');
-
-
-      /*
-        รอ DOM / Modal แสดงก่อนสร้าง Leaflet
-      */
-
-      await new Promise(resolve =>
-        setTimeout(resolve, 200)
-      );
-
-
-      try {
-
-        /*
-          สร้าง Map ครั้งแรก
-        */
-
+      setTimeout(async () => {
         if (!overviewMap) {
-
-          overviewMap =
-            L.map(
-              'leafletMap',
-              {
-                zoomControl: true
-              }
-            ).setView(
-              DEFAULT_CENTER,
-              10
-            );
-
-
-          L.tileLayer(
-            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            {
-              maxZoom: 19,
-              attribution:
-                '&copy; OpenStreetMap contributors'
-            }
-          ).addTo(
-            overviewMap
-          );
-
+          overviewMap = L.map('leafletMap').setView(DEFAULT_CENTER, 10);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(overviewMap);
         } else {
-
           overviewMap.invalidateSize();
-
         }
 
-
-        /*
-          ล้าง Marker เดิม
-        */
-
-        mapMarkers.forEach(
-          marker => {
-
-            try {
-              overviewMap.removeLayer(marker);
-            } catch (e) {}
-
-          }
-        );
-
-
+        // ลบ Marker เก่าออกก่อน
+        mapMarkers.forEach(m => overviewMap.removeLayer(m));
         mapMarkers = [];
 
-
-        const bounds = [];
-
-
-        /*
-          หาและสร้าง Marker
-        */
+        const validCoords = [];
 
         for (const item of data) {
+          const coords = await getItemCoordinates(item);
+          if (coords) {
+            const sym = item.symbol || 'ก่อสร้าง';
+            const pIcon = problemIcons[sym] || '⚠️';
+            const sIcon = statusIcons[item.status] || '📌';
 
-          const coordinates =
-            await getItemCoordinates(item);
-
-
-          /*
-            ถ้าหาพิกัดไม่ได้
-            ไม่สร้าง Marker ปลอม
-          */
-
-          if (!coordinates) {
-
-            console.warn(
-              'ไม่พบพิกัด:',
-              item.location,
-              item.gmapsUrl
-            );
-
-            continue;
-          }
-
-
-          const lat =
-            coordinates.lat;
-
-          const lng =
-            coordinates.lng;
-
-
-          const sym =
-            item.symbol || 'ก่อสร้าง';
-
-          const pIcon =
-            problemIcons[sym] || "⚠️";
-
-          const sIcon =
-            statusIcons[item.status] || "📌";
-
-
-          /*
-            Custom Icon
-          */
-
-          const markerHtml = `
-            <div
-              style="
-                background:#ffffff;
-                border:3px solid #059669;
-                border-radius:50%;
-                width:38px;
-                height:38px;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                font-size:18px;
-                box-shadow:0 3px 8px rgba(0,0,0,.35);
-              ">
-
-              ${pIcon}
-
-            </div>
-          `;
-
-
-          const customIcon =
-            L.divIcon({
-
-              className:
-                'custom-div-icon',
-
-              html:
-                markerHtml,
-
-              iconSize:
-                [38, 38],
-
-              iconAnchor:
-                [19, 19],
-
-              popupAnchor:
-                [0, -19]
-
+            const customIcon = L.divIcon({
+              className: 'custom-div-icon',
+              html: `<div style="background: white; border: 2px solid #047857; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">${pIcon}</div>`,
+              iconSize: [32, 32],
+              iconAnchor: [16, 16]
             });
 
+            const marker = L.marker([coords.lat, coords.lng], { icon: customIcon }).addTo(overviewMap);
 
-          /*
-            สร้าง Marker
-          */
-
-          const marker =
-            L.marker(
-              [lat, lng],
-              {
-                icon: customIcon
-              }
-            ).addTo(
-              overviewMap
-            );
-
-
-          /*
-            Popup
-          */
-
-          marker.bindPopup(`
-
-            <div
-              style="
-                font-family:sans-serif;
-                min-width:220px;
-              ">
-
-              <div
-                style="
-                  font-weight:bold;
-                  color:#065f46;
-                  margin-bottom:6px;
-                  font-size:14px;
-                ">
-
-                ${pIcon}
-                ${sym}
-
+            const popupContent = `
+              <div style="font-family: Arial, sans-serif; font-size: 12px; min-width: 180px; line-height: 1.4;">
+                <strong>${pIcon} ${sym}</strong><br>
+                <strong>สถานที่:</strong> ${item.location || '-'}<br>
+                <strong>ผู้ส่ง:</strong> ${item.reporter || '-'}<br>
+                <strong>สถานะ:</strong> ${sIcon} ${item.status || '-'}<br>
+                <strong>องค์กร:</strong> ${item.company || '-'}<br>
+                ${item.gmapsUrl ? `<a href="${item.gmapsUrl}" target="_blank" style="color: #dc2626; font-weight: bold; text-decoration: underline; margin-top: 4px; display: inline-block;">นำทาง Google Maps</a>` : ''}
               </div>
+            `;
+            marker.bindPopup(popupContent);
+            marker.itemId = item.id;
 
-              <div
-                style="
-                  font-size:13px;
-                  margin-bottom:4px;
-                ">
-
-                <strong>สถานที่:</strong>
-                ${item.location || '-'}
-
-              </div>
-
-              <div
-                style="
-                  font-size:13px;
-                  margin-bottom:4px;
-                ">
-
-                <strong>องค์กร:</strong>
-                ${item.company || '-'}
-
-              </div>
-
-              <div
-                style="
-                  font-size:13px;
-                  margin-bottom:8px;
-                ">
-
-                <strong>สถานะ:</strong>
-                ${sIcon}
-                ${item.status || '-'}
-
-              </div>
-
-              <div
-                style="
-                  font-size:11px;
-                  color:#6b7280;
-                  margin-bottom:8px;
-                ">
-
-                พิกัด:
-                ${lat.toFixed(6)},
-                ${lng.toFixed(6)}
-
-              </div>
-
-              ${
-                item.gmapsUrl
-                  ?
-                  `
-                    <a
-                      href="${item.gmapsUrl}"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style="
-                        display:inline-block;
-                        background:#dc2626;
-                        color:white;
-                        font-size:11px;
-                        padding:5px 9px;
-                        border-radius:4px;
-                        text-decoration:none;
-                        font-weight:bold;
-                      ">
-
-                      <i class="fa-solid fa-location-arrow"></i>
-                      นำทาง Google Maps
-
-                    </a>
-                  `
-                  :
-                  ''
-              }
-
-            </div>
-
-          `);
-
-
-          /*
-            เก็บข้อมูลไว้สำหรับ focusOnItem()
-          */
-
-          marker.itemRef =
-            item;
-
-          marker.latLng =
-            [lat, lng];
-
-
-          mapMarkers.push(
-            marker
-          );
-
-
-          bounds.push(
-            [lat, lng]
-          );
-
+            mapMarkers.push(marker);
+            validCoords.push([coords.lat, coords.lng]);
+          }
         }
 
-
-        /*
-          บันทึก lat/lng ที่หาได้กลับ localStorage
-        */
-
-        localStorage.setItem(
-          'company_traffic_reports',
-          JSON.stringify(data)
-        );
-
-
-        /*
-          Zoom ให้เห็นทุก Marker
-        */
-
-        if (bounds.length === 1) {
-
-          overviewMap.setView(
-            bounds[0],
-            15
-          );
-
-        } else if (bounds.length > 1) {
-
-          overviewMap.fitBounds(
-            bounds,
-            {
-              padding:
-                [50, 50],
-
-              maxZoom:
-                15
-            }
-          );
-
+        if (validCoords.length > 0) {
+          const bounds = L.latLngBounds(validCoords);
+          overviewMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
         } else {
-
-          /*
-            ไม่มี Marker ที่มีพิกัด
-          */
-
-          overviewMap.setView(
-            DEFAULT_CENTER,
-            10
-          );
-
-          listContainer.insertAdjacentHTML(
-            'afterbegin',
-            `
-              <div
-                class="p-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg text-xs mb-2">
-
-                <i class="fa-solid fa-triangle-exclamation"></i>
-
-                บางรายการยังไม่มีพิกัดที่ระบบสามารถอ่านได้
-                กรุณาใส่ URL Google Maps ที่มีพิกัด
-                หรือใช้ชื่อสถานที่ที่ค้นหาได้
-
-              </div>
-            `
-          );
+          overviewMap.setView(DEFAULT_CENTER, 10);
         }
-
-
-        /*
-          สำคัญ:
-          Leaflet ที่อยู่ใน Modal ต้อง invalidateSize
-        */
-
-        setTimeout(
-          () => {
-
-            if (overviewMap) {
-
-              overviewMap.invalidateSize();
-
-            }
-
-          },
-          300
-        );
-
-
-      } catch (error) {
-
-        console.error(
-          "Map error:",
-          error
-        );
-
-
-        alert(
-          "เกิดข้อผิดพลาดในการแสดงแผนที่\n\n" +
-          error.message
-        );
-
-      } finally {
 
         loading.classList.add('hidden');
-
-      }
+      }, 100);
     }
-
-
-    /* =========================================================
-       FOCUS ITEM
-    ========================================================= */
-
-    function focusOnItem(itemId) {
-
-      if (!overviewMap) {
-        return;
-      }
-
-
-      const found =
-        mapMarkers.find(
-          marker =>
-            marker.itemRef &&
-            marker.itemRef.id === itemId
-        );
-
-
-      if (found) {
-
-        overviewMap.setView(
-          found.latLng,
-          15,
-          {
-            animate: true
-          }
-        );
-
-
-        setTimeout(
-          () => {
-            found.openPopup();
-          },
-          300
-        );
-
-      } else {
-
-        /*
-          Marker ยังไม่มี
-          อาจเป็นรายการที่ไม่มีพิกัด
-        */
-
-        const data =
-          getStoredData();
-
-        const item =
-          data.find(
-            x => x.id === itemId
-          );
-
-
-        if (item) {
-
-          alert(
-            "ไม่พบพิกัดของรายการนี้บนแผนที่\n\n" +
-            "สถานที่: " +
-            (item.location || "-") +
-            "\n\n" +
-            "กรุณาตรวจสอบลิงก์ Google Maps"
-          );
-        }
-      }
-    }
-
-
-    /* =========================================================
-       CLOSE MAP
-    ========================================================= */
 
     function closeOverviewMapModal() {
+      document.getElementById('mapModal').classList.add('hidden');
+    }
 
-      document
-        .getElementById('mapModal')
-        .classList.add('hidden');
+    function focusOnItem(id) {
+      const data = getStoredData();
+      const item = data.find(i => i.id === id);
+      if (!item) return;
 
-
-      /*
-        ไม่ลบ Map
-        เพื่อให้เปิดใหม่ได้เร็ว
-      */
-
-      if (overviewMap) {
-
-        setTimeout(
-          () => {
-
-            overviewMap.invalidateSize();
-
-          },
-          100
-        );
+      const modal = document.getElementById('mapModal');
+      if (modal.classList.contains('hidden')) {
+        openOverviewMapModal();
+        setTimeout(() => {
+          locateMarkerOnMap(item);
+        }, 400);
+      } else {
+        locateMarkerOnMap(item);
       }
     }
 
-
-    /* =========================================================
-       CLOSE MODAL BY CLICK OUTSIDE
-    ========================================================= */
-
-    document
-      .getElementById('mapModal')
-      .addEventListener(
-        'click',
-        function(event) {
-
-          if (
-            event.target === this
-          ) {
-
-            closeOverviewMapModal();
-
-          }
+    async function locateMarkerOnMap(item) {
+      if (!overviewMap) return;
+      const coords = await getItemCoordinates(item);
+      if (coords) {
+        overviewMap.setView([coords.lat, coords.lng], 16, { animate: true });
+        const targetMarker = mapMarkers.find(m => m.itemId === item.id);
+        if (targetMarker) {
+          targetMarker.openPopup();
         }
-      );
-
-
-    /* =========================================================
-       ESC TO CLOSE
-    ========================================================= */
-
-    document.addEventListener(
-      'keydown',
-      function(event) {
-
-        if (
-          event.key === 'Escape'
-        ) {
-
-          const modal =
-            document.getElementById(
-              'mapModal'
-            );
-
-          if (
-            !modal.classList.contains(
-              'hidden'
-            )
-          ) {
-
-            closeOverviewMapModal();
-
-          }
-        }
+      } else {
+        alert('ไม่พบพิกัดตำแหน่งของรายการนี้');
       }
-    );
+    }
 
-
-    /* =========================================================
-       PAGE LOAD
-    ========================================================= */
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      () => {
-
-        loadReports();
-
-      }
-    );
+    document.addEventListener('DOMContentLoaded', () => {
+      loadReports();
+    });
 
   </script>
-
 </body>
 </html>
