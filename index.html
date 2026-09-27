@@ -379,7 +379,13 @@
     /* =========================================================
         CONFIG
     ========================================================= */
+const SUPABASE_URL = "ใส่ Project URL ตรงนี้";
+const SUPABASE_PUBLISHABLE_KEY = "ใส่ Publishable key ตรงนี้";
 
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
     const ADMIN_PASSWORD = "admin";
 
     let isAdmin = false;
