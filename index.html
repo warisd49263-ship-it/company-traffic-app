@@ -8,6 +8,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Leaflet CSS for Interactive Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    #leafletMap { z-index: 10; }
+  </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen pb-10">
 
@@ -108,7 +113,7 @@
             <label class="block text-sm font-bold text-gray-700 mb-1">
               <i class="fa-solid fa-map-location-dot text-red-500 mr-1"></i> ลิงก์ Google Maps (ถ้ามี)
             </label>
-            <input type="url" id="googleMapsUrl" placeholder="วางลิงก์ เช่น https://maps.app.goo.gl/... หรือ https://google.com/maps/..." class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+            <input type="url" id="googleMapsUrl" placeholder="วางลิงก์ เช่น https://maps.app.goo.gl/... หรือพิกัด q=lat,lng" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
           </div>
 
           <div>
@@ -149,7 +154,7 @@
       <!-- Modal Header -->
       <div class="bg-emerald-800 text-white p-4 flex justify-between items-center">
         <h3 class="text-lg font-bold flex items-center gap-2">
-          <i class="fa-solid fa-map-location-dot text-red-400"></i> แผนที่ทั้งหมดของการแจ้งเตือนจราจร
+          <i class="fa-solid fa-map-location-dot text-red-400"></i> แผนที่ภาพรวมจุดแจ้งเตือนจราจรทั้งหมด
         </h3>
         <button onclick="closeOverviewMapModal()" class="text-white/80 hover:text-white text-xl font-bold">
           <i class="fa-solid fa-xmark"></i>
@@ -158,17 +163,9 @@
 
       <!-- Modal Body -->
       <div class="p-4 overflow-y-auto flex-1 space-y-4">
-        <!-- แผนที่แสดงผลหลัก -->
-        <div class="w-full h-64 md:h-80 rounded-lg overflow-hidden border border-gray-300 shadow-inner bg-gray-100 relative">
-          <iframe 
-            id="overviewMapIframe"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d495913.3888365922!2d100.32288828236103!3d13.784918237255146!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x311d6032280d61f3%3A0x10100b25de24820!2sBangkok!5e0!3m2!1sen!2sth!4v1700000000000!5m2!1sen!2sth" 
-            width="100%" 
-            height="100%" 
-            style="border:0;" 
-            allowfullscreen="" 
-            loading="lazy">
-          </iframe>
+        <!-- Leaflet Map Container -->
+        <div class="w-full h-72 md:h-96 rounded-lg overflow-hidden border border-gray-300 shadow-inner bg-gray-100 relative">
+          <div id="leafletMap" class="w-full h-full"></div>
         </div>
 
         <!-- รายการจุดแจ้งเตือนทั้งหมดที่สามารถคลิกเพื่อซูมแผนที่ได้ -->
@@ -177,7 +174,7 @@
             <h4 class="font-bold text-sm text-gray-700 flex items-center gap-1">
               <i class="fa-solid fa-list text-emerald-600"></i> รายชื่อจุดแจ้งเตือนทั้งหมดในระบบ (<span id="totalMapCount">0</span> จุด)
             </h4>
-            <span class="text-xs text-gray-400">* คลิกปุ่มนำทางเพื่อเปิด Google Maps แยกแต่ละจุด</span>
+            <span class="text-xs text-gray-400">* คลิกที่รายการเพื่อซูมพิกัดบนแผนที่ทันที</span>
           </div>
           <div id="modalLocationList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
             <!-- จะถูกเติมด้วย JS -->
@@ -195,10 +192,15 @@
     </div>
   </div>
 
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <!-- JavaScript Logic -->
   <script>
     const ADMIN_PASSWORD = "admin";
     let isAdmin = false;
+    let overviewMap = null;
+    let mapMarkers = [];
 
     const problemIcons = {
       "ก่อสร้าง": "🚧",
@@ -224,6 +226,18 @@
         gmapsUrl: "https://maps.google.com/?q=13.690,101.070",
         imgUrl: "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=800&auto=format&fit=crop",
         details: "น้ำท่วมทางเข้า",
+        time: "เมื่อสักครู่"
+      },
+      {
+        id: "item_2",
+        company: "TTT",
+        reporter: "แอดมินระบบ",
+        status: "กำลังดำเนินการ",
+        symbol: "ก่อสร้าง",
+        location: "บางปะอิน อยุธยา",
+        gmapsUrl: "https://maps.google.com/?q=14.230,100.580",
+        imgUrl: "",
+        details: "ซ่อมแซมผิวจราจร",
         time: "เมื่อสักครู่"
       }
     ];
@@ -293,8 +307,9 @@
         if (item.status === 'แก้ไขแล้ว') badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-300";
         if (item.status === 'กำลังดำเนินการ') badgeColor = "bg-blue-100 text-blue-800 border-blue-300";
 
+        const sym = item.symbol || 'ก่อสร้าง';
         const sIcon = statusIcons[item.status] || "📌";
-        const pIcon = problemIcons[item.symbol] || "⚠️";
+        const pIcon = problemIcons[sym] || "⚠️";
 
         const mapsButton = item.gmapsUrl ? 
           `<a href="${item.gmapsUrl}" target="_blank" class="inline-flex items-center gap-1 text-xs bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 px-3 py-1 rounded-md font-bold transition">
@@ -314,23 +329,26 @@
         return `
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col justify-between max-w-md">
             <div>
-              <!-- 1. ส่วนหัวการ์ด: ชื่อบริษัท + สถานะ + ปุ่มลบ -->
+              <!-- 1. ส่วนหัวการ์ด: ชื่อบริษัท + ประเภทปัญหา + สถานะ -->
               <div class="p-3 border-b flex items-center justify-between bg-white">
                 <span class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
                   <i class="fa-solid fa-building text-emerald-700 text-sm"></i> ${item.company || 'ไม่ระบุองค์กร'}
                 </span>
                 <div class="flex items-center gap-1">
-                  <span class="text-[11px] px-2.5 py-0.5 rounded border font-bold ${badgeColor}">
+                  <span class="text-[11px] px-2 py-0.5 rounded border font-bold bg-gray-50 text-gray-700">
+                    ${pIcon} ${sym}
+                  </span>
+                  <span class="text-[11px] px-2 py-0.5 rounded border font-bold ${badgeColor}">
                     ${sIcon} ${item.status}
                   </span>
                   ${deleteButton}
                 </div>
               </div>
 
-              <!-- 2. รูปภาพที่ดึงจากลิงก์ที่ผู้ใช้แจ้ง -->
+              <!-- 2. รูปภาพประกอบ -->
               ${imageBox}
 
-              <!-- 3. ส่วนรายละเอียดสถานที่และข้อความ -->
+              <!-- 3. ส่วนรายละเอียดสถานที่ -->
               <div class="p-4 space-y-1.5">
                 <p class="text-xs text-gray-700 flex items-center gap-1.5 font-medium">
                   <i class="fa-solid fa-location-dot text-red-500"></i> <strong>สถานที่:</strong> ${item.location}
@@ -387,57 +405,141 @@
       }
     }
 
-    /* Modal แผนทั้งหมดของการแจ้งเตือน Logic */
-    function openOverviewMapModal() {
+    /* Modal Interactive Map Logic (Leaflet) */
+    async function openOverviewMapModal() {
       const data = getStoredData();
       const listContainer = document.getElementById('modalLocationList');
       document.getElementById('totalMapCount').innerText = data.length;
 
       if (data.length === 0) {
         listContainer.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">ไม่มีข้อมูลจุดแจ้งเตือน</p>`;
-        document.getElementById('overviewMapIframe').src = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d495913.3888365922!2d100.32288828236103!3d13.784918237255146!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x311d6032280d61f3%3A0x10100b25de24820!2sBangkok!5e0!3m2!1sen!2sth!4v1700000000000!5m2!1sen!2sth";
-      } else {
-        // ตั้งค่าแผนที่หลักให้โฟกัสที่จุดล่าสุด หรือจุดแรกที่มีลิงก์แผนที่
-        let defaultMapQuery = "Bangkok, Thailand";
-        for (let item of data) {
-          if (item.location) {
-            defaultMapQuery = item.location;
-            break;
-          }
-        }
-        document.getElementById('overviewMapIframe').src = `https://maps.google.com/maps?q=${encodeURIComponent(defaultMapQuery)}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
-
-        listContainer.innerHTML = data.map(item => {
-          const pIcon = problemIcons[item.symbol] || "⚠️";
-          const sIcon = statusIcons[item.status] || "📌";
-          return `
-            <div class="p-2.5 bg-gray-50 hover:bg-emerald-50 rounded-lg border border-gray-200 flex justify-between items-center text-xs transition gap-2">
-              <div class="cursor-pointer flex-1" onclick="focusMapLocation('${encodeURIComponent(item.location)}')">
-                <span class="font-bold text-gray-800">${pIcon} [${item.symbol}]</span>
-                <span class="text-gray-700 font-medium ml-1">${item.location}</span>
-                <span class="text-gray-400 text-[10px] block">สถานะ: ${sIcon} ${item.status} | องค์กร: ${item.company}</span>
-              </div>
-              <div class="flex items-center gap-1 shrink-0">
-                <button onclick="focusMapLocation('${encodeURIComponent(item.location)}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] px-2.5 py-1 rounded font-semibold shadow-sm">
-                  <i class="fa-solid fa-crosshairs"></i> ซูมแผนที่
-                </button>
-                ${item.gmapsUrl ? `
-                  <a href="${item.gmapsUrl}" target="_blank" class="bg-red-500 hover:bg-red-600 text-white text-[11px] px-2.5 py-1 rounded font-semibold flex items-center gap-1 shadow-sm">
-                    <i class="fa-solid fa-location-arrow"></i> นำทาง
-                  </a>
-                ` : ''}
-              </div>
-            </div>
-          `;
-        }).join('');
+        return;
       }
 
+      // แสดงรายการใน modal
+      listContainer.innerHTML = data.map(item => {
+        const sym = item.symbol || 'ก่อสร้าง';
+        const pIcon = problemIcons[sym] || "⚠️";
+        const sIcon = statusIcons[item.status] || "📌";
+        return `
+          <div class="p-2.5 bg-gray-50 hover:bg-emerald-50 rounded-lg border border-gray-200 flex justify-between items-center text-xs transition gap-2">
+            <div class="cursor-pointer flex-1" onclick="focusOnItem('${item.id}')">
+              <span class="font-bold text-gray-800">${pIcon} [${sym}]</span>
+              <span class="text-gray-700 font-medium ml-1">${item.location}</span>
+              <span class="text-gray-400 text-[10px] block">สถานะ: ${sIcon} ${item.status} | องค์กร: ${item.company}</span>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button onclick="focusOnItem('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] px-2.5 py-1 rounded font-semibold shadow-sm">
+                <i class="fa-solid fa-crosshairs"></i> ดูในแผนที่
+              </button>
+              ${item.gmapsUrl ? `
+                <a href="${item.gmapsUrl}" target="_blank" class="bg-red-500 hover:bg-red-600 text-white text-[11px] px-2.5 py-1 rounded font-semibold flex items-center gap-1 shadow-sm">
+                  <i class="fa-solid fa-location-arrow"></i> นำทาง
+                </a>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
       document.getElementById('mapModal').classList.remove('hidden');
+
+      // เริ่มต้นเรนเดอร์ Leaflet Map
+      setTimeout(async () => {
+        if (!overviewMap) {
+          overviewMap = L.map('leafletMap').setView([13.7563, 100.5018], 10);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+          }).addTo(overviewMap);
+        } else {
+          overviewMap.invalidateSize();
+        }
+
+        // ล้างหมุดเดิม
+        mapMarkers.forEach(m => overviewMap.removeLayer(m));
+        mapMarkers = [];
+
+        let bounds = [];
+
+        for (let item of data) {
+          let lat = 13.7563;
+          let lng = 100.5018;
+          let foundCoord = false;
+
+          // ตรวจสอบพิกัดจาก Google Maps URL ถ้ามี
+          if (item.gmapsUrl) {
+            const coordMatch = item.gmapsUrl.match(/q=([-0-9.]+),([-0-9.]+)/) || item.gmapsUrl.match(/@([-0-9.]+),([-0-9.]+)/);
+            if (coordMatch) {
+              lat = parseFloat(coordMatch[1]);
+              lng = parseFloat(coordMatch[2]);
+              foundCoord = true;
+            }
+          }
+
+          // ถ้าไม่มีพิกัดใน URL ลองแปลงชื่อสถานที่ด้วย Nominatim Geocoder
+          if (!foundCoord && item.location) {
+            try {
+              const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(item.location + ' Thailand')}`);
+              const json = await res.json();
+              if (json && json.length > 0) {
+                lat = parseFloat(json[0].lat);
+                lng = parseFloat(json[0].lon);
+                foundCoord = true;
+              }
+            } catch (e) {
+              console.error("Geocode error:", e);
+            }
+          }
+
+          // กรณีหาพิกัดไม่ได้ ให้สุ่มขยับจากจุดกึ่งกลางเล็กน้อยเพื่อไม่ให้ทับกันสนิท
+          if (!foundCoord) {
+            lat += (Math.random() - 0.5) * 0.1;
+            lng += (Math.random() - 0.5) * 0.1;
+          }
+
+          const sym = item.symbol || 'ก่อสร้าง';
+          const pIcon = problemIcons[sym] || "⚠️";
+          const sIcon = statusIcons[item.status] || "📌";
+
+          // สร้าง Custom Marker HTML พร้อมไอคอนประเภทปัญหา
+          const markerHtml = `<div style="background:white; border:2px solid #059669; border-radius:50%; width:34px; height:34px; display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 3px 6px rgba(0,0,0,0.3);">${pIcon}</div>`;
+          const customIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: markerHtml,
+            iconSize: [34, 34],
+            iconAnchor: [17, 17]
+          });
+
+          const marker = L.marker([lat, lng], { icon: customIcon }).addTo(overviewMap);
+          marker.bindPopup(`
+            <div style="font-family:sans-serif; min-width:180px;">
+              <div style="font-weight:bold; color:#065f46; margin-bottom:4px; font-size:13px;">${pIcon} [${sym}]</div>
+              <div style="font-size:12px; margin-bottom:2px;"><strong>สถานที่:</strong> ${item.location}</div>
+              <div style="font-size:12px; margin-bottom:2px;"><strong>องค์กร:</strong> ${item.company}</div>
+              <div style="font-size:12px; margin-bottom:6px;"><strong>สถานะ:</strong> ${sIcon} ${item.status}</div>
+              ${item.gmapsUrl ? `<a href="${item.gmapsUrl}" target="_blank" style="display:inline-block; background:#dc2626; color:white; font-size:11px; padding:3px 8px; border-radius:4px; text-decoration:none; font-weight:bold;">นำทาง Google Maps</a>` : ''}
+            </div>
+          `);
+
+          marker.itemRef = item;
+          marker.latLng = [lat, lng];
+          mapMarkers.push(marker);
+          bounds.push([lat, lng]);
+        }
+
+        if (bounds.length > 0) {
+          overviewMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+        }
+      }, 100);
     }
 
-    function focusMapLocation(locationQuery) {
-      const decodedLoc = decodeURIComponent(locationQuery);
-      document.getElementById('overviewMapIframe').src = `https://maps.google.com/maps?q=${encodeURIComponent(decodedLoc)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+    function focusOnItem(itemId) {
+      const found = mapMarkers.find(m => m.itemRef.id === itemId);
+      if (found && overviewMap) {
+        overviewMap.setView(found.latLng, 15);
+        found.openPopup();
+      }
     }
 
     function closeOverviewMapModal() {
