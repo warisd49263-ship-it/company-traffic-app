@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -9,15 +8,13 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Font Awesome -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
   <style>
     #leafletMap {
@@ -38,20 +35,15 @@
 
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen pb-10">
 
-  <!-- =========================================================
-       HEADER
-  ========================================================== -->
-
+  <!-- Header -->
   <header class="bg-emerald-800 text-white shadow-md p-4">
     <div class="max-w-6xl mx-auto flex justify-between items-center flex-wrap gap-2">
-
       <h1 class="text-xl font-bold flex items-center gap-2">
         <i class="fa-solid fa-traffic-light"></i>
         ระบบแจ้งปัญหาจราจร / เส้นทาง
       </h1>
 
       <div class="flex items-center gap-3">
-
         <span class="text-xs sm:text-sm bg-emerald-900 px-3 py-1 rounded-full">
           <i class="fa-solid fa-user mr-1"></i>
           สิทธิ์: ผู้ใช้ทั่วไป
@@ -61,23 +53,15 @@
           onclick="toggleAdminLogin()"
           id="adminBtn"
           class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1 transition">
-
           <i class="fa-solid fa-lock"></i>
           เข้าสู่ระบบแอดมิน
-
         </button>
-
       </div>
     </div>
   </header>
 
-
-  <!-- =========================================================
-       NAVIGATION
-  ========================================================== -->
-
+  <!-- Navigation -->
   <nav class="bg-white text-gray-600 shadow-sm border-b border-gray-200 p-3">
-
     <div class="max-w-6xl mx-auto flex justify-between items-center flex-wrap gap-2">
 
       <div class="flex gap-6 text-sm font-semibold">
@@ -86,20 +70,16 @@
           onclick="switchTab('report-tab')"
           id="nav-report"
           class="text-emerald-700 border-b-2 border-emerald-700 pb-1 flex items-center gap-1">
-
           <i class="fa-solid fa-pen-to-square"></i>
           ฟอร์มแจ้งปัญหา
-
         </button>
 
         <button
           onclick="switchTab('list-tab')"
           id="nav-list"
           class="hover:text-emerald-700 pb-1 flex items-center gap-1">
-
           <i class="fa-solid fa-list-check"></i>
           รายการแจ้งเตือนทั้งหมด
-
         </button>
 
       </div>
@@ -107,27 +87,17 @@
       <button
         onclick="openOverviewMapModal()"
         class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1.5 transition">
-
         <i class="fa-solid fa-map-location-dot"></i>
         ดูแผนที่ทั้งหมดของการแจ้งเตือน
-
       </button>
 
     </div>
   </nav>
 
-
-  <!-- =========================================================
-       MAIN
-  ========================================================== -->
-
+  <!-- Main -->
   <main class="max-w-6xl mx-auto p-4 md:p-6">
 
-
-    <!-- =======================================================
-         TAB 1 : REPORT FORM
-    ======================================================== -->
-
+    <!-- TAB 1 -->
     <div id="report-tab" class="tab-content">
 
       <div class="max-w-2xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-md border border-gray-200">
@@ -140,24 +110,16 @@
           ผู้ใช้ทุกคนสามารถกรอกแจ้งปัญหาเพื่อแจ้งเตือนพนักงานในองค์กรได้
         </p>
 
-
         <form
           id="trafficReportForm"
           onsubmit="handleFormSubmit(event)"
           class="space-y-4">
 
-
           <!-- Company -->
-
           <div>
-
-            <label
-              for="companyName"
-              class="block text-sm font-bold text-gray-700 mb-1">
-
+            <label class="block text-sm font-bold text-gray-700 mb-1">
               <i class="fa-solid fa-building text-emerald-700 mr-1"></i>
               ชื่อองค์กร / บริษัท
-
             </label>
 
             <input
@@ -166,21 +128,13 @@
               required
               placeholder="เช่น บริษัท ตัวอย่าง จำกัด"
               class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-
           </div>
 
-
           <!-- Reporter -->
-
           <div>
-
-            <label
-              for="reporterName"
-              class="block text-sm font-bold text-gray-700 mb-1">
-
+            <label class="block text-sm font-bold text-gray-700 mb-1">
               <i class="fa-solid fa-user-pen text-emerald-700 mr-1"></i>
               ผู้แจ้งเรื่อง (คนส่ง)
-
             </label>
 
             <input
@@ -189,24 +143,15 @@
               required
               placeholder="ชื่อของคุณ"
               class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-
           </div>
 
-
           <!-- Status / Type -->
-
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-
             <div>
-
-              <label
-                for="issueStatus"
-                class="block text-sm font-bold text-gray-700 mb-1">
-
+              <label class="block text-sm font-bold text-gray-700 mb-1">
                 <i class="fa-solid fa-list-check text-blue-600 mr-1"></i>
                 1. สถานะ
-
               </label>
 
               <select
@@ -226,19 +171,12 @@
                 </option>
 
               </select>
-
             </div>
 
-
             <div>
-
-              <label
-                for="symbolType"
-                class="block text-sm font-bold text-gray-700 mb-1">
-
+              <label class="block text-sm font-bold text-gray-700 mb-1">
                 <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1"></i>
                 2. ประเภทปัญหา
-
               </label>
 
               <select
@@ -251,23 +189,15 @@
                 <option value="การจราจรติดขัด">🚗 การจราจรติดขัด</option>
 
               </select>
-
             </div>
 
           </div>
 
-
           <!-- Location -->
-
           <div>
-
-            <label
-              for="locationName"
-              class="block text-sm font-bold text-gray-700 mb-1">
-
+            <label class="block text-sm font-bold text-gray-700 mb-1">
               <i class="fa-solid fa-location-dot text-red-500 mr-1"></i>
-              สถานที่ / ชื่อสถานที่
-
+              สถานที่ / ชื่อสถานที่ (ใช้ยึดพิกัดหลักที่ 2)
             </label>
 
             <input
@@ -276,21 +206,13 @@
               required
               placeholder="เช่น โรบินสัน ฉะเชิงเทรา, ถนนพหลโยธิน กม.45"
               class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-
           </div>
 
-
           <!-- Google Maps URL -->
-
           <div>
-
-            <label
-              for="googleMapsUrl"
-              class="block text-sm font-bold text-gray-700 mb-1">
-
+            <label class="block text-sm font-bold text-gray-700 mb-1">
               <i class="fa-solid fa-map-location-dot text-red-500 mr-1"></i>
-              ลิงก์ Google Maps
-
+              ลิงก์ Google Maps (ใช้ยึดพิกัดหลักที่ 1)
             </label>
 
             <input
@@ -302,21 +224,13 @@
             <span class="text-xs text-gray-400 mt-1 block">
               ระบบจะเลือกพิกัดจากลิงก์นี้ก่อนเป็นอันดับแรกเสมอ
             </span>
-
           </div>
 
-
           <!-- Details -->
-
           <div>
-
-            <label
-              for="issueDetails"
-              class="block text-sm font-bold text-gray-700 mb-1">
-
+            <label class="block text-sm font-bold text-gray-700 mb-1">
               <i class="fa-solid fa-align-left text-gray-600 mr-1"></i>
               รายละเอียดเพิ่มเติม
-
             </label>
 
             <textarea
@@ -324,33 +238,21 @@
               rows="3"
               placeholder="ระบุรายละเอียด เช่น ปิดการจราจร 1 ช่องทาง..."
               class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
-
           </div>
 
-
-          <!-- Image URL -->
-
+          <!-- Image -->
           <div>
-
-            <label
-              for="imageUrl"
-              class="block text-sm font-bold text-gray-700 mb-1">
-
+            <label class="block text-sm font-bold text-gray-700 mb-1">
               <i class="fa-solid fa-image text-emerald-600 mr-1"></i>
               ลิงก์รูปภาพประกอบ (URL)
-
             </label>
 
             <input
               type="url"
               id="imageUrl"
-              placeholder="https://..."
+              placeholder="https://i.imgur.com/..."
               class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-
           </div>
-
-
-          <!-- Submit -->
 
           <button
             type="submit"
@@ -362,16 +264,10 @@
           </button>
 
         </form>
-
       </div>
-
     </div>
 
-
-    <!-- =======================================================
-         TAB 2 : REPORT LIST
-    ======================================================== -->
-
+    <!-- TAB 2 -->
     <div id="list-tab" class="tab-content hidden">
 
       <div
@@ -383,11 +279,7 @@
 
   </main>
 
-
-  <!-- =========================================================
-       MAP MODAL
-  ========================================================== -->
-
+  <!-- MAP MODAL -->
   <div
     id="mapModal"
     class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
@@ -395,62 +287,45 @@
     <div
       class="bg-white rounded-xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
 
-
       <!-- Header -->
-
       <div class="bg-emerald-800 text-white p-4 flex justify-between items-center">
 
         <h3 class="text-lg font-bold flex items-center gap-2">
-
           <i class="fa-solid fa-map-location-dot text-red-400"></i>
           แผนที่ภาพรวมจุดแจ้งเตือนจราจรทั้งหมด
-
         </h3>
 
         <button
           onclick="closeOverviewMapModal()"
           class="text-white/80 hover:text-white text-xl font-bold">
-
           <i class="fa-solid fa-xmark"></i>
-
         </button>
 
       </div>
 
-
       <!-- Body -->
-
       <div class="p-4 overflow-y-auto flex-1 space-y-4">
 
-
         <!-- Map -->
-
         <div
           class="w-full h-72 md:h-96 rounded-lg overflow-hidden border border-gray-300 shadow-inner bg-gray-100 relative">
 
-          <div
-            id="leafletMap"
-            class="w-full h-full">
-          </div>
+          <div id="leafletMap" class="w-full h-full"></div>
 
           <div
             id="mapLoading"
             class="absolute inset-0 bg-white/70 flex items-center justify-center z-[1000] hidden">
 
             <div class="bg-white rounded-lg shadow px-4 py-3 text-sm font-semibold text-gray-700">
-
               <i class="fa-solid fa-spinner fa-spin text-emerald-600 mr-2"></i>
               กำลังประมวลผลพิกัดจากลิงก์และชื่อสถานที่...
-
             </div>
 
           </div>
 
         </div>
 
-
         <!-- List -->
-
         <div>
 
           <div class="flex justify-between items-center mb-2">
@@ -479,9 +354,7 @@
 
       </div>
 
-
       <!-- Footer -->
-
       <div class="bg-gray-100 p-3 text-right border-t border-gray-200">
 
         <button
@@ -495,223 +368,89 @@
       </div>
 
     </div>
-
   </div>
 
-
-  <!-- =========================================================
-       JAVASCRIPT LIBRARIES
-  ========================================================== -->
-
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 
   <script>
 
     /* =========================================================
-       SUPABASE CONFIG
-    ========================================================== */
-
-    // สำคัญ:
-    // URL ต้องเป็น Project URL เท่านั้น
-    // ห้ามใส่ /rest/v1/ ต่อท้าย
-
-    const SUPABASE_URL =
-      "https://gcuxhakupfvsfidraeue.supabase.co";
-
-    // ใส่ Publishable Key ของคุณตรงนี้
-    const SUPABASE_PUBLISHABLE_KEY =
-      "ใส่_PUBLISHABLE_KEY_ของคุณตรงนี้";
-
-
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-      );
-
-
-    /* =========================================================
-       ADMIN
-    ========================================================== */
+        CONFIG
+    ========================================================= */
 
     const ADMIN_PASSWORD = "admin";
 
     let isAdmin = false;
-
-
-    /* =========================================================
-       MAP VARIABLES
-    ========================================================== */
-
     let overviewMap = null;
     let mapMarkers = [];
 
-    const DEFAULT_CENTER = [
-      13.7563,
-      100.5018
-    ];
-
-
-    /* =========================================================
-       ICONS
-    ========================================================== */
+    const DEFAULT_CENTER = [13.7563, 100.5018];
 
     const problemIcons = {
-
       "ก่อสร้าง": "🚧",
       "น้ำท่วม": "🌊",
       "อุบัติเหตุ": "💥",
       "การจราจรติดขัด": "🚗"
-
     };
 
-
     const statusIcons = {
-
       "แจ้งเตือน (รอแก้ไข)": "🔔",
       "กำลังดำเนินการ": "⏳",
       "แก้ไขแล้ว": "✅"
-
     };
 
 
     /* =========================================================
-       DATABASE ROW → WEB ITEM
-    ========================================================== */
+        INITIAL DATA
+    ========================================================= */
 
-    function mapDbRowToItem(row) {
-
-      return {
-
-        id: String(row.id),
-
-        company:
-          row.company ||
-          "TTT",
-
-        reporter:
-          row.reporter ||
-          "ผู้แจ้งทั่วไป",
-
-        status:
-          row.status ||
-          "แจ้งเตือน (รอแก้ไข)",
-
-        symbol:
-          row.symbol ||
-          "ก่อสร้าง",
-
-        location:
-          row.location ||
-          "ไม่ระบุสถานที่",
-
-        gmapsUrl:
-          row.gmaps_url ||
-          "",
-
-        details:
-          row.details ||
-          "",
-
-        imgUrl:
-          row.img_url ||
-          "",
-
-        time:
-          row.created_at
-            ? new Date(row.created_at)
-                .toLocaleString("th-TH")
-            : "เมื่อสักครู่"
-
-      };
-
-    }
-
-
-    /* =========================================================
-       GET DATA FROM SUPABASE
-    ========================================================== */
-
-    async function getStoredData() {
-
-      const {
-        data,
-        error
-      } = await supabaseClient
-
-        .from("traffic_reports")
-
-        .select("*")
-
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
-
-
-      if (error) {
-
-        console.error(
-          "Supabase SELECT Error:",
-          error
-        );
-
-        alert(
-          "ไม่สามารถโหลดข้อมูลจากฐานข้อมูลได้\n\n" +
-          error.message
-        );
-
-        return [];
-
+    const initialData = [
+      {
+        id: "item_1",
+        company: "TTT",
+        reporter: "แอดมินระบบ",
+        status: "แจ้งเตือน (รอแก้ไข)",
+        symbol: "น้ำท่วม",
+        location: "โรบินสัน ฉะเชิงเทรา",
+        gmapsUrl: "https://maps.google.com/?q=13.690,101.070",
+        imgUrl: "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=800&auto=format&fit=crop",
+        details: "น้ำท่วมทางเข้า",
+        time: "เมื่อสักครู่"
+      },
+      {
+        id: "item_2",
+        company: "TTT",
+        reporter: "แอดมินระบบ",
+        status: "กำลังดำเนินการ",
+        symbol: "ก่อสร้าง",
+        location: "บางปะอิน อยุธยา",
+        gmapsUrl: "https://maps.google.com/?q=14.230,100.580",
+        imgUrl: "",
+        details: "ซ่อมแซมผิวจราจร",
+        time: "เมื่อสักครู่"
       }
-
-
-      return data.map(
-        mapDbRowToItem
-      );
-
-    }
+    ];
 
 
     /* =========================================================
-       TAB SWITCH
-    ========================================================== */
+        TAB
+    ========================================================= */
 
     function switchTab(tabId) {
 
       document
-        .querySelectorAll(".tab-content")
-        .forEach(tab => {
+        .querySelectorAll('.tab-content')
+        .forEach(tab => tab.classList.add('hidden'));
 
-          tab.classList.add("hidden");
+      document
+        .getElementById(tabId)
+        .classList.remove('hidden');
 
-        });
+      const navReport = document.getElementById('nav-report');
+      const navList = document.getElementById('nav-list');
 
-
-      const target =
-        document.getElementById(tabId);
-
-
-      if (target) {
-
-        target.classList.remove("hidden");
-
-      }
-
-
-      const navReport =
-        document.getElementById("nav-report");
-
-      const navList =
-        document.getElementById("nav-list");
-
-
-      if (tabId === "report-tab") {
+      if (tabId === 'report-tab') {
 
         navReport.className =
           "text-emerald-700 border-b-2 border-emerald-700 pb-1 flex items-center gap-1";
@@ -728,124 +467,255 @@
           "hover:text-emerald-700 pb-1 flex items-center gap-1";
 
         loadReports();
-
       }
-
     }
 
 
     /* =========================================================
-       ADMIN LOGIN
-    ========================================================== */
+        ADMIN
+    ========================================================= */
 
     function toggleAdminLogin() {
 
       if (!isAdmin) {
 
         const inputPass =
-          prompt(
-            "กรุณากรอกรหัสผ่านแอดมิน:"
-          );
-
+          prompt("กรุณากรอกรหัสผ่านแอดมิน:");
 
         if (inputPass === ADMIN_PASSWORD) {
 
           isAdmin = true;
 
-          alert(
-            "เข้าสู่ระบบแอดมินสำเร็จ"
-          );
+          alert("เข้าสู่ระบบแอดมินสำเร็จ");
 
-
-          const btn =
-            document.getElementById(
-              "adminBtn"
-            );
-
-
-          btn.innerHTML =
+          document.getElementById('adminBtn').innerHTML =
             `<i class="fa-solid fa-unlock"></i> ออกจากระบบแอดมิน`;
 
-
-          btn.className =
+          document.getElementById('adminBtn').className =
             "bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1 transition";
-
 
           loadReports();
 
-        }
+        } else if (inputPass !== null) {
 
-        else if (inputPass !== null) {
-
-          alert(
-            "รหัสผ่านไม่ถูกต้อง!"
-          );
+          alert("รหัสผ่านไม่ถูกต้อง!");
 
         }
 
-      }
-
-      else {
+      } else {
 
         isAdmin = false;
 
+        alert("ออกจากระบบแอดมินแล้ว");
 
-        alert(
-          "ออกจากระบบแอดมินแล้ว"
-        );
-
-
-        const btn =
-          document.getElementById(
-            "adminBtn"
-          );
-
-
-        btn.innerHTML =
+        document.getElementById('adminBtn').innerHTML =
           `<i class="fa-solid fa-lock"></i> เข้าสู่ระบบแอดมิน`;
 
-
-        btn.className =
+        document.getElementById('adminBtn').className =
           "bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1 transition";
 
-
         loadReports();
-
       }
-
     }
 
 
     /* =========================================================
-       LOAD REPORT CARDS
-    ========================================================== */
+        STORAGE
+    ========================================================= */
 
-    async function loadReports() {
+    function getStoredData() {
 
-      const container =
-        document.getElementById(
-          "reportList"
+      const saved =
+        localStorage.getItem('company_traffic_reports');
+
+      if (!saved) {
+
+        localStorage.setItem(
+          'company_traffic_reports',
+          JSON.stringify(initialData)
         );
 
-
-      if (!container) {
-
-        return;
-
+        return [...initialData];
       }
 
+      try {
 
-      container.innerHTML = `
-        <div class="col-span-full text-center py-10 text-gray-500">
-          <i class="fa-solid fa-spinner fa-spin text-emerald-600 mr-2"></i>
-          กำลังโหลดข้อมูล...
-        </div>
-      `;
+        const parsed = JSON.parse(saved);
+
+        if (!Array.isArray(parsed)) {
+          return [...initialData];
+        }
+
+        return parsed.map(item => ({
+          ...item,
+          reporter: item.reporter || 'ผู้แจ้งทั่วไป',
+          company: item.company || 'TTT',
+          status: item.status || 'แจ้งเตือน (รอแก้ไข)',
+          symbol: item.symbol || 'ก่อสร้าง',
+          location: item.location || 'ไม่ระบุสถานที่'
+        }));
+
+      } catch (e) {
+
+        console.error("อ่านข้อมูล localStorage ไม่สำเร็จ:", e);
+
+        return [...initialData];
+      }
+    }
 
 
-      const data =
-        await getStoredData();
+    /* =========================================================
+        GOOGLE MAPS COORDINATE PARSER
+    ========================================================= */
 
+    function extractCoordinates(url) {
+
+      if (!url) {
+        return null;
+      }
+
+      const value = String(url).trim();
+
+      let match = value.match(
+        /[?&]q=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
+      );
+
+      if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+      }
+
+      match = value.match(
+        /@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
+      );
+
+      if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+      }
+
+      match = value.match(
+        /[?&]ll=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
+      );
+
+      if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+      }
+
+      match = value.match(
+        /(-?[1-8]?\d\.\d{4,}),\s*(-?(?:1[0-7]\d|0?\d?\d)\.\d{4,})/
+      );
+
+      if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+      }
+
+      match = value.match(
+        /^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/
+      );
+
+      if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+      }
+
+      return null;
+    }
+
+
+    /* =========================================================
+        VALIDATE COORDINATE
+    ========================================================= */
+
+    function isValidCoordinate(lat, lng) {
+
+      return (
+        Number.isFinite(lat) &&
+        Number.isFinite(lng) &&
+        lat >= -90 &&
+        lat <= 90 &&
+        lng >= -180 &&
+        lng <= 180
+      );
+    }
+
+
+    /* =========================================================
+        GET COORDINATE STRICTLY FROM 2 THINGS:
+        1. Google Maps URL
+        2. Location Name
+    ========================================================= */
+
+    async function getItemCoordinates(item) {
+
+      // 1. ยึดจาก Link Google Maps ก่อนเป็นอันดับแรก
+      if (item.gmapsUrl) {
+        const coords = extractCoordinates(item.gmapsUrl);
+        if (coords && isValidCoordinate(coords.lat, coords.lng)) {
+          return {
+            lat: coords.lat,
+            lng: coords.lng,
+            source: "google-url"
+          };
+        }
+      }
+
+      // 2. ถัดมา ยึดจากชื่อสถานที่ (Geocoding) หากไม่มี Link หรือดึงพิกัดจาก Link ไม่สำเร็จ
+      if (item.location) {
+        try {
+          const searchUrl =
+            'https://nominatim.openstreetmap.org/search' +
+            '?format=json' +
+            '&limit=1' +
+            '&countrycodes=th' +
+            '&q=' +
+            encodeURIComponent(
+              item.location + ', Thailand'
+            );
+
+          const response = await fetch(searchUrl, {
+            headers: {
+              'Accept': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const json = await response.json();
+
+            if (Array.isArray(json) && json.length > 0) {
+              const lat = parseFloat(json[0].lat);
+              const lng = parseFloat(json[0].lon);
+
+              if (isValidCoordinate(lat, lng)) {
+                return {
+                  lat,
+                  lng,
+                  source: "geocode"
+                };
+              }
+            }
+          }
+
+        } catch (error) {
+          console.error("Geocode error:", error);
+        }
+      }
+
+      return null;
+    }
+
+
+    /* =========================================================
+        LOAD REPORT CARDS
+    ========================================================= */
+
+    function loadReports() {
+
+      const data = getStoredData();
+
+      const container =
+        document.getElementById('reportList');
+
+      if (!container) {
+        return;
+      }
 
       if (data.length === 0) {
 
@@ -856,773 +726,294 @@
         `;
 
         return;
-
       }
 
-
-      container.innerHTML =
-        data.map(item => {
-
-
-          let badgeColor =
-            "bg-amber-100 text-amber-800 border-amber-300";
-
-
-          if (
-            item.status === "แก้ไขแล้ว"
-          ) {
-
-            badgeColor =
-              "bg-emerald-100 text-emerald-800 border-emerald-300";
-
-          }
-
-
-          if (
-            item.status === "กำลังดำเนินการ"
-          ) {
-
-            badgeColor =
-              "bg-blue-100 text-blue-800 border-blue-300";
-
-          }
-
-
-          const sym =
-            item.symbol ||
-            "ก่อสร้าง";
-
-
-          const sIcon =
-            statusIcons[item.status] ||
-            "📌";
-
-
-          const pIcon =
-            problemIcons[sym] ||
-            "⚠️";
-
-
-          const mapsButton =
-            item.gmapsUrl
-              ?
-              `
-                <a
-                  href="${item.gmapsUrl}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-1 text-xs bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 px-3 py-1 rounded-md font-bold transition">
-
-                  <i class="fa-solid fa-map-location-dot text-red-500"></i>
-                  นำทาง Google Maps
-
-                </a>
-              `
-              :
-              "";
-
-
-          const deleteButton =
-            isAdmin
-              ?
-              `
-                <button
-                  onclick="deleteReport('${item.id}')"
-                  title="ลบรายการ"
-                  class="text-red-500 hover:text-red-700 text-xs px-2 py-1 rounded border border-red-200 hover:bg-red-50 transition ml-1">
-
-                  <i class="fa-solid fa-trash"></i>
-
-                </button>
-              `
-              :
-              "";
-
-
-          const imageBox =
-            item.imgUrl
-              ?
-              `
-                <div class="h-48 bg-gray-100 overflow-hidden w-full">
-
-                  <img
-                    src="${item.imgUrl}"
-                    onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop';"
-                    class="w-full h-full object-cover"
-                    alt="รูปภาพประกอบ">
-
-                </div>
-              `
-              :
-              "";
-
-
-          return `
-
-            <div
-              class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col justify-between max-w-md">
-
-              <div>
-
-                <div
-                  class="p-3 border-b flex items-center justify-between bg-white">
-
-                  <span
-                    class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-
-                    <i class="fa-solid fa-building text-emerald-700 text-sm"></i>
-
-                    ${item.company || "ไม่ระบุองค์กร"}
-
-                  </span>
-
-
-                  <div class="flex items-center gap-1">
-
-                    <span
-                      class="text-[11px] px-2 py-0.5 rounded border font-bold bg-gray-50 text-gray-700">
-
-                      ${pIcon} ${sym}
-
-                    </span>
-
-
-                    <span
-                      class="text-[11px] px-2 py-0.5 rounded border font-bold ${badgeColor}">
-
-                      ${sIcon} ${item.status}
-
-                    </span>
-
-
-                    ${deleteButton}
-
-                  </div>
-
-                </div>
-
-
-                ${imageBox}
-
-
-                <div class="p-4 space-y-2">
-
-                  <p
-                    class="text-xs text-gray-700 flex items-center gap-1.5 font-medium">
-
-                    <i class="fa-solid fa-user-pen text-emerald-600"></i>
-
-                    <strong>ผู้ส่ง:</strong>
-
-                    <span class="text-gray-900 font-semibold">
-                      ${item.reporter || "ไม่ระบุชื่อ"}
-                    </span>
-
-                  </p>
-
-
-                  <p
-                    class="text-xs text-gray-700 flex items-center gap-1.5 font-medium">
-
-                    <i class="fa-solid fa-location-dot text-red-500"></i>
-
-                    <strong>สถานที่:</strong>
-
-                    ${item.location || "ไม่ระบุสถานที่"}
-
-                  </p>
-
-
-                  <p
-                    class="text-sm text-gray-800 leading-relaxed pt-1">
-
-                    ${item.details || "ไม่มีรายละเอียดเพิ่มเติม"}
-
-                  </p>
-
-                </div>
+      container.innerHTML = data.map(item => {
+
+        let badgeColor =
+          "bg-amber-100 text-amber-800 border-amber-300";
+
+        if (item.status === 'แก้ไขแล้ว') {
+
+          badgeColor =
+            "bg-emerald-100 text-emerald-800 border-emerald-300";
+        }
+
+        if (item.status === 'กำลังดำเนินการ') {
+
+          badgeColor =
+            "bg-blue-100 text-blue-800 border-blue-300";
+        }
+
+        const sym =
+          item.symbol || 'ก่อสร้าง';
+
+        const sIcon =
+          statusIcons[item.status] || "📌";
+
+        const pIcon =
+          problemIcons[sym] || "⚠️";
+
+        const mapsButton =
+          item.gmapsUrl
+            ?
+            `
+              <a
+                href="${item.gmapsUrl}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 text-xs bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 px-3 py-1 rounded-md font-bold transition">
+
+                <i class="fa-solid fa-map-location-dot text-red-500"></i>
+                นำทาง Google Maps
+
+              </a>
+            `
+            :
+            '';
+
+        const deleteButton =
+          isAdmin
+            ?
+            `
+              <button
+                onclick="deleteReport('${item.id}')"
+                title="ลบรายการ"
+                class="text-red-500 hover:text-red-700 text-xs px-2 py-1 rounded border border-red-200 hover:bg-red-50 transition ml-1">
+
+                <i class="fa-solid fa-trash"></i>
+
+              </button>
+            `
+            :
+            '';
+
+        const imageBox =
+          item.imgUrl
+            ?
+            `
+              <div class="h-48 bg-gray-100 overflow-hidden w-full">
+
+                <img
+                  src="${item.imgUrl}"
+                  onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop';"
+                  class="w-full h-full object-cover">
 
               </div>
+            `
+            :
+            '';
 
+        return `
+          <div
+            class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col justify-between max-w-md">
 
+            <div>
+
+              <!-- Header -->
               <div
-                class="px-4 py-3 border-t bg-gray-50/50 flex justify-between items-center text-xs text-gray-400">
+                class="p-3 border-b flex items-center justify-between bg-white">
 
-                <span>
+                <span
+                  class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
 
-                  <i class="fa-regular fa-clock mr-1"></i>
-
-                  ${item.time || "เมื่อสักครู่"}
+                  <i class="fa-solid fa-building text-emerald-700 text-sm"></i>
+                  ${item.company || 'ไม่ระบุองค์กร'}
 
                 </span>
 
+                <div class="flex items-center gap-1">
 
-                ${mapsButton}
+                  <span
+                    class="text-[11px] px-2 py-0.5 rounded border font-bold bg-gray-50 text-gray-700">
+
+                    ${pIcon} ${sym}
+
+                  </span>
+
+                  <span
+                    class="text-[11px] px-2 py-0.5 rounded border font-bold ${badgeColor}">
+
+                    ${sIcon} ${item.status}
+
+                  </span>
+
+                  ${deleteButton}
+
+                </div>
+              </div>
+
+              <!-- Image -->
+              ${imageBox}
+
+              <!-- Details -->
+              <div class="p-4 space-y-2">
+
+                <p
+                  class="text-xs text-gray-700 flex items-center gap-1.5 font-medium">
+
+                  <i class="fa-solid fa-user-pen text-emerald-600"></i>
+
+                  <strong>ผู้ส่ง:</strong>
+                  <span class="text-gray-900 font-semibold">${item.reporter || 'ไม่ระบุชื่อ'}</span>
+
+                </p>
+
+                <p
+                  class="text-xs text-gray-700 flex items-center gap-1.5 font-medium">
+
+                  <i class="fa-solid fa-location-dot text-red-500"></i>
+
+                  <strong>สถานที่:</strong>
+                  ${item.location || 'ไม่ระบุสถานที่'}
+
+                </p>
+
+                <p
+                  class="text-sm text-gray-800 leading-relaxed pt-1">
+
+                  ${item.details || 'ไม่มีรายละเอียดเพิ่มเติม'}
+
+                </p>
 
               </div>
 
             </div>
 
-          `;
+            <!-- Footer -->
+            <div
+              class="px-4 py-3 border-t bg-gray-50/50 flex justify-between items-center text-xs text-gray-400">
 
-        }).join("");
+              <span>
+                <i class="fa-regular fa-clock mr-1"></i>
+                ${item.time || 'เมื่อสักครู่'}
+              </span>
 
+              ${mapsButton}
+
+            </div>
+
+          </div>
+        `;
+
+      }).join('');
     }
 
 
     /* =========================================================
-       FORM SUBMIT → SUPABASE INSERT
-    ========================================================== */
+        FORM SUBMIT
+    ========================================================= */
 
-    async function handleFormSubmit(event) {
+    function handleFormSubmit(event) {
 
       event.preventDefault();
 
-
-      const form =
-        document.getElementById(
-          "trafficReportForm"
-        );
-
-
       const newItem = {
 
+        id: "item_" + Date.now(),
+
         company:
-          document
-            .getElementById("companyName")
-            .value
-            .trim(),
+          document.getElementById('companyName').value.trim(),
 
         reporter:
-          document
-            .getElementById("reporterName")
-            .value
-            .trim(),
+          document.getElementById('reporterName').value.trim(),
 
         status:
-          document
-            .getElementById("issueStatus")
-            .value,
+          document.getElementById('issueStatus').value,
 
         symbol:
-          document
-            .getElementById("symbolType")
-            .value,
+          document.getElementById('symbolType').value,
 
         location:
-          document
-            .getElementById("locationName")
-            .value
-            .trim(),
+          document.getElementById('locationName').value.trim(),
 
-        gmaps_url:
-          document
-            .getElementById("googleMapsUrl")
-            .value
-            .trim(),
+        gmapsUrl:
+          document.getElementById('googleMapsUrl').value.trim(),
 
         details:
-          document
-            .getElementById("issueDetails")
-            .value
-            .trim(),
+          document.getElementById('issueDetails').value.trim(),
 
-        img_url:
-          document
-            .getElementById("imageUrl")
-            .value
-            .trim()
+        imgUrl:
+          document.getElementById('imageUrl').value.trim(),
 
+        time:
+          "เมื่อสักครู่"
       };
 
+      const data =
+        getStoredData();
 
-      console.log(
-        "กำลังส่งข้อมูลไป Supabase:",
-        newItem
+      data.unshift(newItem);
+
+      localStorage.setItem(
+        'company_traffic_reports',
+        JSON.stringify(data)
       );
 
+      alert('บันทึกข้อมูลแจ้งปัญหาเรียบร้อยแล้ว ระบบจะประมวลผลตำแหน่งจากลิงก์ Google Maps และชื่อสถานที่บนแผนที่ภาพรวมให้อัตโนมัติค่ะ');
 
-      const {
-        data,
-        error
-      } = await supabaseClient
+      document
+        .getElementById('trafficReportForm')
+        .reset();
 
-        .from("traffic_reports")
-
-        .insert([
-          newItem
-        ])
-
-        .select()
-        .single();
-
-
-      if (error) {
-
-        console.error(
-          "Supabase INSERT Error:",
-          error
-        );
-
-
-        alert(
-          "ไม่สามารถบันทึกข้อมูลได้\n\n" +
-          error.message
-        );
-
-
-        return;
-
-      }
-
-
-      console.log(
-        "บันทึกสำเร็จ:",
-        data
-      );
-
-
-      alert(
-        "บันทึกข้อมูลแจ้งปัญหาเรียบร้อยแล้ว"
-      );
-
-
-      form.reset();
-
-
-      await loadReports();
-
-
-      switchTab(
-        "list-tab"
-      );
-
+      switchTab('list-tab');
     }
 
 
     /* =========================================================
-       DELETE REPORT → SUPABASE DELETE
-    ========================================================== */
+        DELETE
+    ========================================================= */
 
-    async function deleteReport(id) {
+    function deleteReport(id) {
 
       if (!isAdmin) {
-
         return;
-
       }
 
-
-      const confirmed =
+      if (
         confirm(
-          "คุณต้องการลบรายการนี้ใช่หรือไม่?"
-        );
-
-
-      if (!confirmed) {
-
-        return;
-
-      }
-
-
-      const {
-        error
-      } = await supabaseClient
-
-        .from("traffic_reports")
-
-        .delete()
-
-        .eq(
-          "id",
-          Number(id)
-        );
-
-
-      if (error) {
-
-        console.error(
-          "Supabase DELETE Error:",
-          error
-        );
-
-
-        alert(
-          "ไม่สามารถลบข้อมูลได้\n\n" +
-          error.message
-        );
-
-
-        return;
-
-      }
-
-
-      alert(
-        "ลบข้อมูลเรียบร้อยแล้ว"
-      );
-
-
-      await loadReports();
-
-
-      if (
-        overviewMap &&
-        !document
-          .getElementById("mapModal")
-          .classList
-          .contains("hidden")
-      ) {
-
-        await openOverviewMapModal();
-
-      }
-
-    }
-
-
-    /* =========================================================
-       GOOGLE MAPS COORDINATE PARSER
-    ========================================================== */
-
-    function extractCoordinates(url) {
-
-      if (!url) {
-
-        return null;
-
-      }
-
-
-      const value =
-        String(url).trim();
-
-
-      let match =
-        value.match(
-          /[?&]q=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
-        );
-
-
-      if (
-        match &&
-        isValidCoordinate(
-          parseFloat(match[1]),
-          parseFloat(match[2])
+          'คุณต้องการลบรายการนี้ใช่หรือไม่?'
         )
       ) {
 
-        return {
+        let data =
+          getStoredData();
 
-          lat:
-            parseFloat(match[1]),
-
-          lng:
-            parseFloat(match[2])
-
-        };
-
-      }
-
-
-      match =
-        value.match(
-          /@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
-        );
-
-
-      if (
-        match &&
-        isValidCoordinate(
-          parseFloat(match[1]),
-          parseFloat(match[2])
-        )
-      ) {
-
-        return {
-
-          lat:
-            parseFloat(match[1]),
-
-          lng:
-            parseFloat(match[2])
-
-        };
-
-      }
-
-
-      match =
-        value.match(
-          /[?&]ll=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
-        );
-
-
-      if (
-        match &&
-        isValidCoordinate(
-          parseFloat(match[1]),
-          parseFloat(match[2])
-        )
-      ) {
-
-        return {
-
-          lat:
-            parseFloat(match[1]),
-
-          lng:
-            parseFloat(match[2])
-
-        };
-
-      }
-
-
-      match =
-        value.match(
-          /(-?[1-8]?\d\.\d{4,}),\s*(-?(?:1[0-7]\d|0?\d?\d)\.\d{4,})/
-        );
-
-
-      if (
-        match &&
-        isValidCoordinate(
-          parseFloat(match[1]),
-          parseFloat(match[2])
-        )
-      ) {
-
-        return {
-
-          lat:
-            parseFloat(match[1]),
-
-          lng:
-            parseFloat(match[2])
-
-        };
-
-      }
-
-
-      match =
-        value.match(
-          /^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/
-        );
-
-
-      if (
-        match &&
-        isValidCoordinate(
-          parseFloat(match[1]),
-          parseFloat(match[2])
-        )
-      ) {
-
-        return {
-
-          lat:
-            parseFloat(match[1]),
-
-          lng:
-            parseFloat(match[2])
-
-        };
-
-      }
-
-
-      return null;
-
-    }
-
-
-    /* =========================================================
-       VALIDATE COORDINATE
-    ========================================================== */
-
-    function isValidCoordinate(
-      lat,
-      lng
-    ) {
-
-      return (
-
-        Number.isFinite(lat) &&
-
-        Number.isFinite(lng) &&
-
-        lat >= -90 &&
-        lat <= 90 &&
-
-        lng >= -180 &&
-        lng <= 180
-
-      );
-
-    }
-
-
-    /* =========================================================
-       GET ITEM COORDINATES
-    ========================================================== */
-
-    async function getItemCoordinates(item) {
-
-
-      // 1. Google Maps URL
-
-      if (item.gmapsUrl) {
-
-        const coords =
-          extractCoordinates(
-            item.gmapsUrl
+        data =
+          data.filter(
+            item => item.id !== id
           );
 
+        localStorage.setItem(
+          'company_traffic_reports',
+          JSON.stringify(data)
+        );
+
+        loadReports();
 
         if (
-          coords &&
-          isValidCoordinate(
-            coords.lat,
-            coords.lng
-          )
+          overviewMap &&
+          !document
+            .getElementById('mapModal')
+            .classList.contains('hidden')
         ) {
 
-          return {
-
-            lat:
-              coords.lat,
-
-            lng:
-              coords.lng,
-
-            source:
-              "google-url"
-
-          };
-
+          openOverviewMapModal();
         }
-
       }
-
-
-      // 2. Location Name
-
-      if (item.location) {
-
-        try {
-
-          const searchUrl =
-            "https://nominatim.openstreetmap.org/search" +
-            "?format=json" +
-            "&limit=1" +
-            "&countrycodes=th" +
-            "&q=" +
-            encodeURIComponent(
-              item.location +
-              ", Thailand"
-            );
-
-
-          const response =
-            await fetch(
-              searchUrl,
-              {
-                headers: {
-                  "Accept":
-                    "application/json"
-                }
-              }
-            );
-
-
-          if (response.ok) {
-
-            const json =
-              await response.json();
-
-
-            if (
-              Array.isArray(json) &&
-              json.length > 0
-            ) {
-
-              const lat =
-                parseFloat(
-                  json[0].lat
-                );
-
-
-              const lng =
-                parseFloat(
-                  json[0].lon
-                );
-
-
-              if (
-                isValidCoordinate(
-                  lat,
-                  lng
-                )
-              ) {
-
-                return {
-
-                  lat,
-                  lng,
-
-                  source:
-                    "geocode"
-
-                };
-
-              }
-
-            }
-
-          }
-
-        }
-
-        catch (error) {
-
-          console.error(
-            "Geocode error:",
-            error
-          );
-
-        }
-
-      }
-
-
-      return null;
-
     }
 
 
     /* =========================================================
-       RENDER MAP LOCATION LIST
-    ========================================================== */
+        RENDER MODAL LOCATION LIST
+    ========================================================= */
 
-    function renderMapLocationList(
-      data
-    ) {
+    function renderMapLocationList(data) {
 
       const listContainer =
         document.getElementById(
-          "modalLocationList"
+          'modalLocationList'
         );
-
-
-      if (!listContainer) {
-
-        return;
-
-      }
-
 
       if (data.length === 0) {
 
@@ -1633,31 +1024,21 @@
         `;
 
         return;
-
       }
-
 
       listContainer.innerHTML =
         data.map(item => {
 
-
           const sym =
-            item.symbol ||
-            "ก่อสร้าง";
-
+            item.symbol || 'ก่อสร้าง';
 
           const pIcon =
-            problemIcons[sym] ||
-            "⚠️";
-
+            problemIcons[sym] || "⚠️";
 
           const sIcon =
-            statusIcons[item.status] ||
-            "📌";
-
+            statusIcons[item.status] || "📌";
 
           return `
-
             <div
               class="p-2.5 bg-gray-50 hover:bg-emerald-50 rounded-lg border border-gray-200 flex justify-between items-center text-xs transition gap-2">
 
@@ -1666,41 +1047,28 @@
                 onclick="focusOnItem('${item.id}')">
 
                 <span class="font-bold text-gray-800">
-
                   ${pIcon} [${sym}]
-
                 </span>
-
 
                 <span class="text-gray-700 font-medium ml-1">
-
-                  ${item.location || "ไม่ระบุสถานที่"}
-
+                  ${item.location || 'ไม่ระบุสถานที่'}
                 </span>
-
 
                 <span
                   class="text-gray-500 text-[10px] block mt-0.5">
 
                   สถานะ:
-                  ${sIcon} ${item.status || "-"}
-
+                  ${sIcon} ${item.status || '-'}
                   |
-
                   ผู้ส่ง:
-                  <strong class="text-emerald-700">
-                    ${item.reporter || "-"}
-                  </strong>
-
+                  <strong class="text-emerald-700">${item.reporter || '-'}</strong>
                   |
-
                   องค์กร:
-                  ${item.company || "-"}
+                  ${item.company || '-'}
 
                 </span>
 
               </div>
-
 
               <div class="flex items-center gap-1 shrink-0">
 
@@ -1712,7 +1080,6 @@
                   ดูในแผนที่
 
                 </button>
-
 
                 ${
                   item.gmapsUrl
@@ -1730,518 +1097,136 @@
                       </a>
                     `
                     :
-                    ""
+                    ''
                 }
 
               </div>
 
             </div>
-
           `;
 
-        }).join("");
-
+        }).join('');
     }
 
 
     /* =========================================================
-       OPEN OVERVIEW MAP
-    ========================================================== */
+        OPEN OVERVIEW MAP & MAP LOGIC
+    ========================================================= */
 
     async function openOverviewMapModal() {
 
-      const modal =
-        document.getElementById(
-          "mapModal"
-        );
-
-
-      const countElement =
-        document.getElementById(
-          "totalMapCount"
-        );
-
-
-      const loading =
-        document.getElementById(
-          "mapLoading"
-        );
-
-
-      const data =
-        await getStoredData();
-
-
-      countElement.innerText =
-        data.length;
-
-
-      modal.classList.remove(
-        "hidden"
-      );
-
-
-      loading.classList.remove(
-        "hidden"
-      );
-
-
-      renderMapLocationList(
-        data
-      );
-
-
-      setTimeout(
-        async () => {
-
-
-          if (!overviewMap) {
-
-            overviewMap =
-              L.map(
-                "leafletMap"
-              ).setView(
-                DEFAULT_CENTER,
-                10
-              );
-
-
-            L.tileLayer(
-              "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-              {
-                maxZoom: 19,
-
-                attribution:
-                  "&copy; OpenStreetMap contributors"
-
-              }
-            ).addTo(
-              overviewMap
-            );
-
-          }
-
-          else {
-
-            overviewMap.invalidateSize();
-
-          }
-
-
-          // Remove old markers
-
-          mapMarkers.forEach(
-            marker => {
-
-              overviewMap.removeLayer(
-                marker
-              );
-
-            }
-          );
-
-
-          mapMarkers = [];
-
-
-          const validCoords = [];
-
-
-          for (
-            const item of data
-          ) {
-
-            const coords =
-              await getItemCoordinates(
-                item
-              );
-
-
-            if (!coords) {
-
-              continue;
-
-            }
-
-
-            const sym =
-              item.symbol ||
-              "ก่อสร้าง";
-
-
-            const pIcon =
-              problemIcons[sym] ||
-              "⚠️";
-
-
-            const sIcon =
-              statusIcons[item.status] ||
-              "📌";
-
-
-            const customIcon =
-              L.divIcon({
-
-                className:
-                  "custom-div-icon",
-
-                html:
-                  `
-                    <div
-                      style="
-                        background:white;
-                        border:2px solid #047857;
-                        border-radius:50%;
-                        width:32px;
-                        height:32px;
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        font-size:16px;
-                        box-shadow:0 2px 4px rgba(0,0,0,0.2);
-                      "
-                    >
-                      ${pIcon}
-                    </div>
-                  `,
-
-                iconSize:
-                  [32, 32],
-
-                iconAnchor:
-                  [16, 16]
-
-              });
-
-
-            const marker =
-              L.marker(
-                [
-                  coords.lat,
-                  coords.lng
-                ],
-                {
-                  icon:
-                    customIcon
-                }
-              ).addTo(
-                overviewMap
-              );
-
-
-            const popupContent =
-              `
-                <div
-                  style="
-                    font-family:Arial,sans-serif;
-                    font-size:12px;
-                    min-width:180px;
-                    line-height:1.4;
-                  "
-                >
-
-                  <strong>
-                    ${pIcon} ${sym}
-                  </strong>
-
-                  <br>
-
-                  <strong>
-                    สถานที่:
-                  </strong>
-
-                  ${item.location || "-"}
-
-                  <br>
-
-                  <strong>
-                    ผู้ส่ง:
-                  </strong>
-
-                  <span
-                    style="
-                      color:#047857;
-                      font-weight:bold;
-                    "
-                  >
-                    ${item.reporter || "-"}
-                  </span>
-
-                  <br>
-
-                  <strong>
-                    สถานะ:
-                  </strong>
-
-                  ${sIcon} ${item.status || "-"}
-
-                  <br>
-
-                  <strong>
-                    องค์กร:
-                  </strong>
-
-                  ${item.company || "-"}
-
-                  <br>
-
-                  ${
-                    item.gmapsUrl
-                      ?
-                      `
-                        <a
-                          href="${item.gmapsUrl}"
-                          target="_blank"
-                          style="
-                            color:#dc2626;
-                            font-weight:bold;
-                            text-decoration:underline;
-                            margin-top:4px;
-                            display:inline-block;
-                          "
-                        >
-                          นำทาง Google Maps
-                        </a>
-                      `
-                      :
-                      ""
-                  }
-
-                </div>
-              `;
-
-
-            marker.bindPopup(
-              popupContent
-            );
-
-
-            marker.itemId =
-              item.id;
-
-
-            mapMarkers.push(
-              marker
-            );
-
-
-            validCoords.push(
-              [
-                coords.lat,
-                coords.lng
-              ]
-            );
-
-          }
-
-
-          if (
-            validCoords.length > 0
-          ) {
-
-            const bounds =
-              L.latLngBounds(
-                validCoords
-              );
-
-
-            overviewMap.fitBounds(
-              bounds,
-              {
-                padding:
-                  [50, 50],
-
-                maxZoom:
-                  15
-
-              }
-            );
-
-          }
-
-          else {
-
-            overviewMap.setView(
-              DEFAULT_CENTER,
-              10
-            );
-
-          }
-
-
-          loading.classList.add(
-            "hidden"
-          );
-
-
-        },
-        100
-      );
-
-    }
-
-
-    /* =========================================================
-       CLOSE MAP
-    ========================================================== */
-
-    function closeOverviewMapModal() {
-
-      document
-        .getElementById(
-          "mapModal"
-        )
-        .classList.add(
-          "hidden"
-        );
-
-    }
-
-
-    /* =========================================================
-       FOCUS ITEM ON MAP
-    ========================================================== */
-
-    async function focusOnItem(
-      id
-    ) {
-
-      const data =
-        await getStoredData();
-
-
-      const item =
-        data.find(
-          i =>
-            String(i.id) ===
-            String(id)
-        );
-
-
-      if (!item) {
-
-        return;
-
-      }
-
-
-      const modal =
-        document.getElementById(
-          "mapModal"
-        );
-
-
-      if (
-        modal.classList.contains(
-          "hidden"
-        )
-      ) {
-
-        await openOverviewMapModal();
-
-
-        setTimeout(
-          () => {
-
-            locateMarkerOnMap(
-              item
-            );
-
-          },
-          500
-        );
-
-      }
-
-      else {
-
-        await locateMarkerOnMap(
-          item
-        );
-
-      }
-
-    }
-
-
-    /* =========================================================
-       LOCATE MARKER
-    ========================================================== */
-
-    async function locateMarkerOnMap(
-      item
-    ) {
-
-      if (!overviewMap) {
-
-        return;
-
-      }
-
-
-      const coords =
-        await getItemCoordinates(
-          item
-        );
-
-
-      if (coords) {
-
-        overviewMap.setView(
-          [
-            coords.lat,
-            coords.lng
-          ],
-          16,
-          {
-            animate:
-              true
-          }
-        );
-
-
-        const targetMarker =
-          mapMarkers.find(
-            marker =>
-              String(marker.itemId) ===
-              String(item.id)
-          );
-
-
-        if (targetMarker) {
-
-          targetMarker.openPopup();
-
+      const data = getStoredData();
+      const modal = document.getElementById('mapModal');
+      const countElement = document.getElementById('totalMapCount');
+      const loading = document.getElementById('mapLoading');
+
+      countElement.innerText = data.length;
+
+      modal.classList.remove('hidden');
+      loading.classList.remove('hidden');
+
+      renderMapLocationList(data);
+
+      setTimeout(async () => {
+        if (!overviewMap) {
+          overviewMap = L.map('leafletMap').setView(DEFAULT_CENTER, 10);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(overviewMap);
+        } else {
+          overviewMap.invalidateSize();
         }
 
-      }
+        // ลบ Marker เก่าออกก่อน
+        mapMarkers.forEach(m => overviewMap.removeLayer(m));
+        mapMarkers = [];
 
-      else {
+        const validCoords = [];
 
-        alert(
-          "ไม่พบพิกัดตำแหน่งจากลิงก์ Google Maps หรือชื่อสถานที่ของรายการนี้"
-        );
+        for (const item of data) {
+          const coords = await getItemCoordinates(item);
+          if (coords) {
+            const sym = item.symbol || 'ก่อสร้าง';
+            const pIcon = problemIcons[sym] || '⚠️';
+            const sIcon = statusIcons[item.status] || '📌';
 
-      }
+            const customIcon = L.divIcon({
+              className: 'custom-div-icon',
+              html: `<div style="background: white; border: 2px solid #047857; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">${pIcon}</div>`,
+              iconSize: [32, 32],
+              iconAnchor: [16, 16]
+            });
 
+            const marker = L.marker([coords.lat, coords.lng], { icon: customIcon }).addTo(overviewMap);
+
+            const popupContent = `
+              <div style="font-family: Arial, sans-serif; font-size: 12px; min-width: 180px; line-height: 1.4;">
+                <strong>${pIcon} ${sym}</strong><br>
+                <strong>สถานที่:</strong> ${item.location || '-'}<br>
+                <strong>ผู้ส่ง:</strong> <span style="color: #047857; font-weight: bold;">${item.reporter || '-'}</span><br>
+                <strong>สถานะ:</strong> ${sIcon} ${item.status || '-'}<br>
+                <strong>องค์กร:</strong> ${item.company || '-'}<br>
+                ${item.gmapsUrl ? `<a href="${item.gmapsUrl}" target="_blank" style="color: #dc2626; font-weight: bold; text-decoration: underline; margin-top: 4px; display: inline-block;">นำทาง Google Maps</a>` : ''}
+              </div>
+            `;
+            marker.bindPopup(popupContent);
+            marker.itemId = item.id;
+
+            mapMarkers.push(marker);
+            validCoords.push([coords.lat, coords.lng]);
+          }
+        }
+
+        if (validCoords.length > 0) {
+          const bounds = L.latLngBounds(validCoords);
+          overviewMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+        } else {
+          overviewMap.setView(DEFAULT_CENTER, 10);
+        }
+
+        loading.classList.add('hidden');
+      }, 100);
     }
 
+    function closeOverviewMapModal() {
+      document.getElementById('mapModal').classList.add('hidden');
+    }
 
-    /* =========================================================
-       START APPLICATION
-    ========================================================== */
+    function focusOnItem(id) {
+      const data = getStoredData();
+      const item = data.find(i => i.id === id);
+      if (!item) return;
 
-    document.addEventListener(
-      "DOMContentLoaded",
-      () => {
-
-        loadReports();
-
+      const modal = document.getElementById('mapModal');
+      if (modal.classList.contains('hidden')) {
+        openOverviewMapModal();
+        setTimeout(() => {
+          locateMarkerOnMap(item);
+        }, 400);
+      } else {
+        locateMarkerOnMap(item);
       }
-    );
+    }
+
+    async function locateMarkerOnMap(item) {
+      if (!overviewMap) return;
+      const coords = await getItemCoordinates(item);
+      if (coords) {
+        overviewMap.setView([coords.lat, coords.lng], 16, { animate: true });
+        const targetMarker = mapMarkers.find(m => m.itemId === item.id);
+        if (targetMarker) {
+          targetMarker.openPopup();
+        }
+      } else {
+        alert('ไม่พบพิกัดตำแหน่งจากลิงก์ Google Maps หรือชื่อสถานที่ของรายการนี้');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadReports();
+    });
 
   </script>
-
 </body>
 </html>
-```
