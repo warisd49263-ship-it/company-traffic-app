@@ -931,50 +931,40 @@ async function getStoredData() {
         FORM SUBMIT
     ========================================================= */
 
-    function handleFormSubmit(event) {
+async function handleFormSubmit(event) {
+    event.preventDefault();
 
-      event.preventDefault();
+    const newItem = {
+        company: document.getElementById('companyName').value.trim(),
+        reporter: document.getElementById('reporterName').value.trim(),
+        status: document.getElementById('issueStatus').value,
+        symbol: document.getElementById('symbolType').value,
+        location: document.getElementById('locationName').value.trim(),
+        gmaps_url: document.getElementById('googleMapsUrl').value.trim(),
+        details: document.getElementById('issueDetails').value.trim(),
+        img_url: document.getElementById('imageUrl').value.trim()
+    };
 
-      const newItem = {
+    const { data, error } = await supabaseClient
+        .from('traffic_reports')
+        .insert([newItem])
+        .select()
+        .single();
 
-        id: "item_" + Date.now(),
+    if (error) {
+        console.error('Supabase Insert Error:', error);
+        alert('ไม่สามารถบันทึกข้อมูลได้\n' + error.message);
+        return;
+    }
 
-        company:
-          document.getElementById('companyName').value.trim(),
+    console.log('บันทึกสำเร็จ:', data);
 
-        reporter:
-          document.getElementById('reporterName').value.trim(),
+    alert('แจ้งปัญหาเรียบร้อยแล้ว');
 
-        status:
-          document.getElementById('issueStatus').value,
+    document.getElementById('reportForm').reset();
 
-        symbol:
-          document.getElementById('symbolType').value,
-
-        location:
-          document.getElementById('locationName').value.trim(),
-
-        gmapsUrl:
-          document.getElementById('googleMapsUrl').value.trim(),
-
-        details:
-          document.getElementById('issueDetails').value.trim(),
-
-        imgUrl:
-          document.getElementById('imageUrl').value.trim(),
-
-        time:
-          "เมื่อสักครู่"
-      };
-
-      const data =
-        getStoredData();
-
-      data.unshift(newItem);
-
-      localStorage.setItem(
-        'company_traffic_reports',
-        JSON.stringify(data)
+    switchTab('list-tab');
+}
       );
 
       alert('บันทึกข้อมูลแจ้งปัญหาเรียบร้อยแล้ว ระบบจะประมวลผลตำแหน่งจากลิงก์ Google Maps และชื่อสถานที่บนแผนที่ภาพรวมให้อัตโนมัติค่ะ');
