@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพื่อนเดินทาง - ครอบครัว</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+    <style>
+        #map { height: calc(100vh - 120px); min-height: 400px; }
+        .active-tab { border-bottom: 3px solid #16a34a; color: #16a34a; font-weight: bold; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+
+    <!-- Screen 1: หน้าล็อกรหัสผ่านเข้าแอปครอบครัว -->
+    <div id="login-screen" class="fixed inset-0 bg-emerald-900 z-[9999] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl">
+            <div class="bg-emerald-100 text-emerald-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-house-chimney-user"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800">เพื่อนเดินทาง (Family)</h2>
+            <p class="text-sm text-gray-500 mt-1 mb-6">กรอกรหัสผ่านเพื่อเข้าใช้งานเฉพาะครอบครัว</p>
+            <form onsubmit="checkPassword(event)">
+                <input type="password" id="app-pass" placeholder="กรอกรหัสผ่าน" class="w-full text-center text-lg border-2 border-emerald-300 rounded-lg p-2.5 mb-4 focus:outline-none focus:border-emerald-600">
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow">
+                    เข้าสู่ระบบ
+                </button>
+            </form>
+            <p id="pass-error" class="text-red-500 text-xs mt-3 hidden">รหัสผ่านไม่ถูกต้อง โปรดลองอีกครั้ง</p>
+        </div>
+    </div>
+
+    <!-- Screen 2: ตัวแอปพลิเคชันหลัก -->
+    <header class="bg-emerald-800 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white p-2 rounded-full text-emerald-800 shadow">
+                    <i class="fa-solid fa-map-location-dot text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold leading-none">เพื่อนเดินทาง</h1>
+                    <p class="text-xs text-emerald-200 mt-1">ระบบแชร์พิกัดและแจ้งเหตุสำหรับครอบครัว</p>
+                </div>
+            </div>
+            <button onclick="locateMe()" class="bg-emerald-700 hover:bg-emerald-600 text-xs px-3 py-2 rounded-lg border border-emerald-500 flex items-center gap-1">
+                <i class="fa-solid fa-crosshairs text-amber-300"></i> ตำแหน่งฉัน
+            </button>
+        </div>
+        
+        <nav class="bg-white text-gray-600 shadow-inner">
+            <div class="max-w-7xl mx-auto flex overflow-x-auto text-sm sm:text-base border-b">
+                <button onclick="switchTab('map-tab')" id="btn-map-tab" class="active-tab px-5 py-3 whitespace-nowrap focus:outline-none flex items-center space-x-2">
+                    <i class="fa-solid fa-map"></i> <span>แผนที่ครอบครัว</span>
+                </button>
+                <button onclick="switchTab('report-tab')" id="btn-report-tab" class="px-5 py-3 whitespace-nowrap focus:outline-none flex items-center space-x-2">
+                    <i class="fa-solid fa-paper-plane"></i> <span>ปักหมุด / แจ้งข่าว</span>
+                </button>
+                <button onclick="switchTab('directory-tab')" id="btn-directory-tab" class="px-5 py-3 whitespace-nowrap focus:outline-none flex items-center space-x-2">
+                    <i class="fa-solid fa-phone"></i> <span>เบอร์สำคัญ</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4">
+        <!-- แผนที่ & รายการแจ้งเหตุ -->
+        <div id="map-tab" class="tab-content block">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div class="lg:col-span-2 bg-white rounded-xl shadow p-2 relative">
+                    <div id="map" class="rounded-lg"></div>
+                </div>
+                <div class="bg-white rounded-xl shadow p-4 flex flex-col h-[500px]">
+                    <h2 class="font-bold text-gray-800 text-lg mb-3 flex items-center justify-between">
+                        <span><i class="fa-solid fa-bullhorn text-emerald-600 mr-2"></i> โน้ต/แจ้งเหตุในบ้าน</span>
+                        <span id="sync-status" class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">Live</span>
+                    </h2>
+                    <div id="incident-list" class="space-y-3 overflow-y-auto flex-1 pr-1">
+                        <p class="text-gray-400 text-center py-10">กำลังโหลดข้อมูล...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ฟอร์มปักหมุด/แจ้งเหตุ -->
+        <div id="report-tab" class="tab-content hidden">
+            <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-2xl font-bold text-emerald-800 mb-2">ปักหมุดแจ้งเหตุ/จุดนัดหมาย</h2>
+                <p class="text-gray-600 text-sm mb-6">ข้อความนี้จะไปขึ้นบนแผนที่ของทุกคนในบ้านทันทีค่ะ</p>
+                <form id="reportForm" onsubmit="handleReportSubmit(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">ผู้แจ้ง (ชื่อในบ้าน)</label>
+                            <input type="text" id="reporterName" required placeholder="เช่น ชีน, คุณแม่, พี่ชาย" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">หัวข้อ/ประเภท</label>
+                            <select id="reportType" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <option value="จุดพักรถ/นัดพบ">จุดพักรถ / นัดพบ</option>
+                                <option value="รถเสีย/ต้องการความช่วยเหลือ">รถเสีย / ต้องการความช่วยเหลือ</option>
+                                <option value="รถติดหนัก">การจราจรติดขัดมาก</option>
+                                <option value="อุบัติเหตุ">อุบัติเหตุทางถนน</option>
+                                <option value="โน้ตทั่วไป">โน้ตการเดินทางทั่วไป</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">สถานที่ / สังเกตเห็น</label>
+                            <input type="text" id="reportLocation" required placeholder="เช่น ปั๊ม PTT บางปะอิน กม.55" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">รายละเอียดเพิ่มเติม</label>
+                            <textarea id="reportDetails" rows="3" placeholder="ระบุรายละเอียด เช่น แวะกินข้าว 20 นาที หรือ รถยางแบนกำลังรอช่าง" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md">
+                            <i class="fa-solid fa-location-dot mr-2"></i> ส่งข้อมูลเข้าแผนที่ครอบครัว
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- เบอร์โทรฉุกเฉิน -->
+        <div id="directory-tab" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">เบอร์ติดต่อสำคัญสำหรับผู้เดินทาง</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="directory-grid"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ----------------------------------------------------
+        // 1. กำหนดรหัสผ่านเข้าแอปครอบครัว (ตั้งตรงนี้ได้เลยค่ะ)
+        // ----------------------------------------------------
+        const FAMILY_PASSWORD = "1234"; // เปลี่ยนรหัสผ่านตรงนี้ได้ตามต้องการ
+
+        function checkPassword(e) {
+            e.preventDefault();
+            const passInput = document.getElementById('app-pass').value;
+            if (passInput === FAMILY_PASSWORD) {
+                document.getElementById('login-screen').classList.add('hidden');
+                localStorage.setItem('family_auth', 'true');
+            } else {
+                document.getElementById('pass-error').classList.remove('hidden');
+            }
+        }
+
+        if (localStorage.getItem('family_auth') === 'true') {
+            document.getElementById('login-screen').classList.add('hidden');
+        }
+
+        // ----------------------------------------------------
+        // 2. ตั้งค่า Firebase Realtime Database (ฟรี)
+        // (สามารถใช้ Config ชุดนี้ทดสอบฟรีได้เลยค่ะ)
+        // ----------------------------------------------------
+        const firebaseConfig = {
+            databaseURL: "https://travel-companion-demo-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+        
+        // Initializing Firebase
+        let db;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+        } catch(e) { console.log(e); }
+
+        // Map Setup
+        let map;
+        let markers = [];
+        let userLocationMarker;
+
+        const emergencyContacts = [
+            { name: "สายด่วนกรมทางหลวง", number: "1586" },
+            { name: "ตำรวจทางหลวง", number: "1193" },
+            { name: "การทางพิเศษแห่งประเทศไทย", number: "1543" },
+            { name: "ศูนย์นเรนทร (ฉุกเฉิน)", number: "1669" },
+            { name: "จราจร สวพ.91", number: "1644" },
+            { name: "ร่วมด้วยช่วยกัน", number: "1677" }
+        ];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initMap();
+            listenFirebaseData();
+            renderDirectory();
+        });
+
+        function initMap() {
+            // ตั้งจุดเริ่มต้นที่กรุงเทพฯ
+            map = L.map('map').setView([13.7563, 100.5018], 8);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+        }
+
+        // ดึงพิกัดปัจจุบันจากมือถือ
+        function locateMe() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    map.setView([lat, lng], 14);
+
+                    if (userLocationMarker) map.removeLayer(userLocationMarker);
+                    userLocationMarker = L.circleMarker([lat, lng], {
+                        radius: 8,
+                        fillColor: "#3b82f6",
+                        color: "#ffffff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }).addTo(map).bindPopup("ตำแหน่งของคุณตอนนี้").openPopup();
+                }, () => {
+                    alert("ไม่สามารถดึงพิกัด GPS ได้ โปรดเปิด Location Service บนมือถือ");
+                });
+            }
+        }
+
+        // ฟังข้อมูลจาก Firebase แบบ Real-time
+        function listenFirebaseData() {
+            if (!db) return;
+            const reportsRef = db.ref('family_reports');
+            reportsRef.limitToLast(20).on('value', (snapshot) => {
+                const data = snapshot.val();
+                const listContainer = document.getElementById('incident-list');
+                
+                // ลบหมุดเก่าออกก่อนวาดใหม่
+                markers.forEach(m => map.removeLayer(m));
+                markers = [];
+
+                if (!data) {
+                    listContainer.innerHTML = '<p class="text-gray-400 text-center py-10">ยังไม่มีการแจ้งเหตุในครอบครัว</p>';
+                    return;
+                }
+
+                const items = Object.values(data).reverse();
+                listContainer.innerHTML = items.map(item => `
+                    <div class="border-l-4 border-emerald-500 bg-emerald-50/60 p-3 rounded shadow-sm text-sm">
+                        <div class="flex justify-between items-start">
+                            <span class="font-bold text-emerald-800">[${item.type}]</span>
+                            <span class="text-[10px] bg-white border px-1.5 py-0.5 rounded text-gray-500">${item.time}</span>
+                        </div>
+                        <p class="font-semibold text-gray-800 mt-1">${item.location}</p>
+                        <p class="text-xs text-gray-600 mt-0.5">${item.details || ''}</p>
+                        <p class="text-[11px] text-emerald-700 mt-2 font-medium"><i class="fa-solid fa-user"></i> แจ้งโดย: ${item.name}</p>
+                    </div>
+                `).join('');
+
+                // ปักหมุดบนแผนที่
+                Object.values(data).forEach(item => {
+                    if (item.lat && item.lng) {
+                        const m = L.marker([item.lat, item.lng]).addTo(map)
+                            .bindPopup(`<b>${item.type} (${item.name})</b><br>${item.location}<br>${item.details || ''}`);
+                        markers.push(m);
+                    }
+                });
+            });
+        }
+
+        // ส่งข้อมูลขึ้น Firebase
+        function handleReportSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('reporterName').value;
+            const type = document.getElementById('reportType').value;
+            const location = document.getElementById('reportLocation').value;
+            const details = document.getElementById('reportDetails').value;
+
+            const sendData = (lat = 13.7563, lng = 100.5018) => {
+                const now = new Date();
+                const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} น.`;
+
+                db.ref('family_reports').push({
+                    name, type, location, details,
+                    time: timeStr,
+                    lat, lng,
+                    timestamp: Date.now()
+                });
+
+                alert("ส่งข้อมูลเข้ากลุ่มครอบครัวเรียบร้อยแล้วค่ะ!");
+                document.getElementById('reportForm').reset();
+                switchTab('map-tab');
+            };
+
+            // แนบพิกัด GPS ปัจจุบันไปด้วยเลย
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    pos => sendData(pos.coords.latitude, pos.coords.longitude),
+                    () => sendData() // Fallback ถ้าดึงตำแหน่งไม่ได้
+                );
+            } else {
+                sendData();
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active-tab'));
+            
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById('btn-' + tabId).classList.add('active-tab');
+
+            if (tabId === 'map-tab' && map) {
+                setTimeout(() => map.invalidateSize(), 200);
+            }
+        }
+
+        function renderDirectory() {
+            const grid = document.getElementById('directory-grid');
+            grid.innerHTML = emergencyContacts.map(d => `
+                <div class="p-4 border rounded-lg bg-gray-50 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm">${d.name}</h3>
+                        <span class="text-xl font-black text-emerald-700">${d.number}</span>
+                    </div>
+                    <a href="tel:${d.number}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-sm font-semibold">
+                        <i class="fa-solid fa-phone"></i> โทร
+                    </a>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
