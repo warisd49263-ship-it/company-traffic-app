@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบแจ้งปัญหาจราจรภายในองค์กร (Company Traffic Reporter)</title>
+    <title>TTT Road News - ระบบแจ้งปัญหาจราจรและถนนภายในองค์กร</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Leaflet CSS & JS -->
@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        #map { height: 420px; }
+        #map { height: 450px; }
         .active-tab { border-bottom: 3px solid #16a34a; color: #16a34a; font-weight: bold; }
     </style>
 </head>
@@ -27,12 +27,12 @@
                     <i class="fa-solid fa-building-circle-exclamation text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold leading-none">ระบบแจ้งปัญหาจราจร & ถนน (Internal Traffic Report)</h1>
-                    <p class="text-xs text-emerald-200 mt-1">ศูนย์รับแจ้งเหตุและอัปเดตสถานการณ์สำหรับบุคลากรในบริษัท</p>
+                    <h1 class="text-xl font-bold leading-none">TTT Road News</h1>
+                    <p class="text-xs text-emerald-200 mt-1">ระบบแจ้งปัญหาจราจรและเส้นทางภายในองค์กร</p>
                 </div>
             </div>
             <button onclick="locateMe()" class="bg-emerald-700 hover:bg-emerald-600 text-xs px-3 py-2 rounded-lg border border-emerald-500 flex items-center gap-1">
-                <i class="fa-solid fa-crosshairs text-amber-300"></i> พิกัดของฉัน
+                <i class="fa-solid fa-crosshairs text-amber-300"></i> พิกัด GPS ของฉัน
             </button>
         </div>
         
@@ -53,11 +53,11 @@
 
     <main class="flex-1 max-w-7xl w-full mx-auto p-4">
 
-        <!-- TAB 1: รายการแจ้งปัญหาทั้งหมด -->
+        <!-- TAB 1: รายการปัญหาทั้งหมด -->
         <div id="feed-tab" class="tab-content block">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                    <i class="fa-solid fa-bullhorn text-emerald-600 mr-2"></i> รายการปัญหาจราจรที่ถูกแจ้งเข้ามา
+                    <i class="fa-solid fa-bullhorn text-emerald-600 mr-2"></i> รายการปัญหาที่ถูกแจ้งเข้ามา
                 </h2>
                 <span id="report-count" class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-bold">
                     0 รายการ
@@ -65,15 +65,15 @@
             </div>
 
             <div id="reports-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- รายการการ์ดปัญหาจะขึ้นที่นี่ -->
+                <!-- การ์ดรายการปัญหาจะแสดงผลที่นี่ -->
             </div>
         </div>
 
-        <!-- TAB 2: ฟอร์มแจ้งปัญหาใหม่ (5 หัวข้อหลัก) -->
+        <!-- TAB 2: ฟอร์มแจ้งปัญหาใหม่ (5 ข้อมูลหลัก) -->
         <div id="report-tab" class="tab-content hidden">
             <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                <h2 class="text-2xl font-bold text-emerald-800 mb-1">ฟอร์มแจ้งปัญหาจราจร/เส้นทาง</h2>
-                <p class="text-gray-500 text-sm mb-6">กรุณากรอกข้อมูลปัญหาเพื่อแจ้งเตือนพนักงานและผู้ใช้ทาง</p>
+                <h2 class="text-2xl font-bold text-emerald-800 mb-1">ฟอร์มแจ้งปัญหาจราจร / เส้นทาง</h2>
+                <p class="text-gray-500 text-sm mb-6">กรอกข้อมูลปัญหาเพื่อแจ้งเตือนพนักงานและผู้ใช้ทางในองค์กร</p>
 
                 <form id="trafficReportForm" onsubmit="handleFormSubmit(event)">
                     <div class="space-y-4">
@@ -107,19 +107,19 @@
                                     <option value="ต้นไม้">🌳 ต้นไม้ล้ม / กิ่งไม้กีดขวาง</option>
                                     <option value="น้ำท่วม">🌊 น้ำท่วมขัง / รอการระบาย</option>
                                     <option value="อุบัติเหตุ">💥 อุบัติเหตุทางถนน</option>
-                                    <option value="ถนนชำรุด">🛠️ ถนนเป็นหลุมเป็นบ่อ / ปรุด</option>
+                                    <option value="ถนนชำรุด">🛠️ ถนนเป็นหลุมเป็นบ่อ / ชำรุด</option>
                                     <option value="อื่นๆ">⚠️ ปัญหาอื่นๆ</option>
                                 </select>
                             </div>
                         </div>
 
-                        <!-- สถานที่ / จุดสังเกต -->
+                        <!-- สถานที่เกิดเหตุ -->
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">สถานที่เกิดเหตุ / พิกัด <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">สถานที่เกิดเหตุ / จุดสังเกต <span class="text-red-500">*</span></label>
                             <input type="text" id="locationName" required placeholder="เช่น หน้าโรงงานบางปะอิน, ถนนพหลโยธิน กม.45" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                         </div>
 
-                        <!-- 4. รูปภาพ (เลือกอัปโหลดไฟล์ หรือวาง URL) -->
+                        <!-- 4. รูปภาพ (เลือกไฟล์จากเครื่อง หรือใส่ลิงก์ URL) -->
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">4. รูปภาพประกอบปัญหา</label>
                             <input type="file" id="imageFile" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 mb-2">
@@ -129,7 +129,7 @@
                         <!-- รายละเอียดเพิ่มเติม -->
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">รายละเอียดปัญหาเพิ่มเติม</label>
-                            <textarea id="issueDetails" rows="3" placeholder="ระบุรายละเอียด เช่น ช่องทางที่กีดขวาง หรือข้อแนะนำการเลี่ยงเส้นทาง..." class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                            <textarea id="issueDetails" rows="3" placeholder="ระบุรายละเอียด เช่น ช่องทางที่กีดขวาง หรือคำแนะนำเลี่ยงเส้นทาง..." class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
                         </div>
 
                         <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition duration-200">
@@ -150,7 +150,7 @@
     </main>
 
     <footer class="bg-gray-800 text-gray-400 text-xs text-center py-4 mt-auto">
-        <p>ระบบแจ้งปัญหาจราจรภายในองค์กร - พร้อมสำหรับ GitHub Pages</p>
+        <p>TTT Road News - ระบบแจ้งและติดตามปัญหาจราจรภายในองค์กร</p>
     </footer>
 
     <script>
@@ -166,9 +166,7 @@
                 company: "บริษัท โตโยต้า ทรานสปอร์ต จำกัด",
                 reporter: "คุณชีน",
                 status: "แจ้งเตือน (รอแก้ไข)",
-                statusClass: "bg-red-100 text-red-800 border-red-300",
                 symbol: "ก่อสร้าง",
-                symbolIcon: "fa-solid fa-helmet-safety text-amber-600",
                 location: "ถนนพหลโยธิน กม.32 ขาออก",
                 imgUrl: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop",
                 details: "ซ่อมบำรุงพื้นผิวถนน ปิดการจราจรช่องทางขวาสุด 1 ช่องทาง",
@@ -180,9 +178,7 @@
                 company: "บริษัท โตโยต้า ทรานสปอร์ต จำกัด",
                 reporter: "ฝ่ายความปลอดภัย (SHE)",
                 status: "กำลังดำเนินการ",
-                statusClass: "bg-amber-100 text-amber-800 border-amber-300",
                 symbol: "น้ำท่วม",
-                symbolIcon: "fa-solid fa-water text-cyan-600",
                 location: "หน้าทางเข้าโรงงานประตู 2",
                 imgUrl: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=800&auto=format&fit=crop",
                 details: "น้ำท่วมขังสูงประมาณ 10 ซม. เจ้าหน้าที่กำลังเร่งสูบน้ำออก",
@@ -203,13 +199,12 @@
             }).addTo(map);
         }
 
-        // ดึงตำแหน่ง GPS ของผู้แจ้ง
         function locateMe() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(position => {
                     currentLat = position.coords.latitude;
                     currentLng = position.coords.longitude;
-                    map.setView([currentLat, currentLng], 13);
+                    map.setView([currentLat, currentLng], 14);
                     alert("ดึงพิกัดปัจจุบันของคุณเรียบร้อยแล้วค่ะ");
                 });
             }
@@ -222,7 +217,6 @@
             document.getElementById('report-count').innerText = `${data.length} รายการ`;
             const grid = document.getElementById('reports-grid');
             
-            // ลบหมุดเก่า
             Object.values(markers).forEach(m => map.removeLayer(m));
             markers = {};
 
@@ -265,7 +259,7 @@
                         
                         <div class="pt-2 border-t flex items-center justify-between text-xs text-gray-500">
                             <span><i class="fa-solid fa-user text-emerald-600 mr-1"></i> ผู้แจ้ง: <strong>${item.reporter}</strong></span>
-                            <button onclick="zoomToPin(${item.lat}, ${item.lng})" class="text-emerald-700 font-bold hover:underline">
+                            <button onclick="zoomToPin('${item.id}', ${item.lat}, ${item.lng})" class="text-emerald-700 font-bold hover:underline">
                                 <i class="fa-solid fa-map-pin text-red-500"></i> ดูบนแผนที่
                             </button>
                         </div>
@@ -289,7 +283,6 @@
             });
         }
 
-        // จัดการส่งฟอร์มบันทึกข้อมูล
         function handleFormSubmit(e) {
             e.preventDefault();
             const company = document.getElementById('companyName').value;
@@ -325,7 +318,6 @@
                 switchTab('feed-tab');
             };
 
-            // หากมีการเลือกอัปโหลดไฟล์ภาพ
             if (imageFileInput.files && imageFileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
@@ -337,10 +329,11 @@
             }
         }
 
-        function zoomToPin(lat, lng) {
+        function zoomToPin(id, lat, lng) {
             switchTab('map-tab');
             setTimeout(() => {
                 map.setView([lat, lng], 14);
+                if (markers[id]) markers[id].openPopup();
             }, 300);
         }
 
