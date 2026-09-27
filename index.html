@@ -222,7 +222,7 @@
               class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
 
             <span class="text-xs text-gray-400 mt-1 block">
-              รองรับ URL ที่มี q=lat,lng, @lat,lng หรือ ll=lat,lng
+              รองรับ URL ที่มี q=lat,lng, @lat,lng, ll=lat,lng หรือพิกัดในลิงก์
             </span>
           </div>
 
@@ -528,7 +528,7 @@
 
 
     /* =========================================================
-        STORAGE
+        STORAGE (พร้อม Migration ข้อมูลเก่าที่มีปัญหาเรื่อง reporter)
     ========================================================= */
 
     function getStoredData() {
@@ -554,7 +554,15 @@
           return [...initialData];
         }
 
-        return parsed;
+        // ป้องกันข้อมูลเก่าใน localStorage ที่ไม่มีฟิลด์ reporter
+        return parsed.map(item => ({
+          ...item,
+          reporter: item.reporter || 'ผู้แจ้งทั่วไป',
+          company: item.company || 'TTT',
+          status: item.status || 'แจ้งเตือน (รอแก้ไข)',
+          symbol: item.symbol || 'ก่อสร้าง',
+          location: item.location || 'ไม่ระบุสถานที่'
+        }));
 
       } catch (e) {
 
@@ -566,7 +574,7 @@
 
 
     /* =========================================================
-        GOOGLE MAPS COORDINATE PARSER
+        GOOGLE MAPS COORDINATE PARSER (ปรับปรุงให้รองรับลิงก์หลายรูปแบบ)
     ========================================================= */
 
     function extractCoordinates(url) {
@@ -577,11 +585,12 @@
 
       const value = String(url).trim();
 
+      // 1. ค้นหารูปแบบ ?q= หรือ &q=
       let match = value.match(
         /[?&]q=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
       );
 
-      if (match) {
+      if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
 
         return {
           lat: parseFloat(match[1]),
@@ -589,11 +598,12 @@
         };
       }
 
+      // 2. ค้นหารูปแบบ @lat,lng
       match = value.match(
         /@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
       );
 
-      if (match) {
+      if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
 
         return {
           lat: parseFloat(match[1]),
@@ -601,11 +611,12 @@
         };
       }
 
+      // 3. ค้นหารูปแบบ ll=
       match = value.match(
         /[?&]ll=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
       );
 
-      if (match) {
+      if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
 
         return {
           lat: parseFloat(match[1]),
@@ -613,11 +624,25 @@
         };
       }
 
+      // 4. ค้นหาพิกัดคู่ตัวเลขใน URL ทั่วไป (เช่น /13.xxxx,100.xxxx/)
+      match = value.match(
+        /(-?[1-8]?\d\.\d{4,}),\s*(-?(?:1[0-7]\d|0?\d?\d)\.\d{4,})/
+      );
+
+      if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
+
+        return {
+          lat: parseFloat(match[1]),
+          lng: parseFloat(match[2])
+        };
+      }
+
+      // 5. พิกัดแบบตรงตัว lat,lng
       match = value.match(
         /^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/
       );
 
-      if (match) {
+      if (match && isValidCoordinate(parseFloat(match[1]), parseFloat(match[2]))) {
 
         return {
           lat: parseFloat(match[1]),
@@ -913,7 +938,7 @@
                   <i class="fa-solid fa-user-pen text-emerald-600"></i>
 
                   <strong>ผู้ส่ง:</strong>
-                  <span class="text-gray-900">${item.reporter || 'ไม่ระบุชื่อ'}</span>
+                  <span class="text-gray-900 font-semibold">${item.reporter || 'ไม่ระบุชื่อ'}</span>
 
                 </p>
 
@@ -1023,9 +1048,9 @@
       alert(
         coords
           ?
-          'บันทึกข้อมูลแจ้งปัญหาเรียบร้อยแล้ว และบันทึกพิกัดสำหรับแผนที่แล้ว'
+          'บันทึกข้อมูลแจ้งปัญหาเรียบร้อยแล้ว และดึงพิกัดแผนที่สำเร็จ'
           :
-          'บันทึกข้อมูลแจ้งปัญหาเรียบร้อยแล้ว\n\nหมายเหตุ: ระบบยังไม่พบพิกัดจากลิงก์ Google Maps จะพยายามค้นหาจากชื่อสถานที่เมื่อเปิดแผนที่'
+          'บันทึกข้อมูลแจ้งปัญหาเรียบร้อยแล้ว\n\nหมายเหตุ: ระบบจะค้นหาพิกัดจากชื่อสถานที่เมื่อเปิดแผนที่ภาพรวม'
       );
 
       document
@@ -1131,13 +1156,13 @@
                 </span>
 
                 <span
-                  class="text-gray-400 text-[10px] block">
+                  class="text-gray-500 text-[10px] block mt-0.5">
 
                   สถานะ:
                   ${sIcon} ${item.status || '-'}
                   |
                   ผู้ส่ง:
-                  <strong class="text-gray-600">${item.reporter || '-'}</strong>
+                  <strong class="text-emerald-700">${item.reporter || '-'}</strong>
                   |
                   องค์กร:
                   ${item.company || '-'}
@@ -1240,7 +1265,7 @@
               <div style="font-family: Arial, sans-serif; font-size: 12px; min-width: 180px; line-height: 1.4;">
                 <strong>${pIcon} ${sym}</strong><br>
                 <strong>สถานที่:</strong> ${item.location || '-'}<br>
-                <strong>ผู้ส่ง:</strong> ${item.reporter || '-'}<br>
+                <strong>ผู้ส่ง:</strong> <span style="color: #047857; font-weight: bold;">${item.reporter || '-'}</span><br>
                 <strong>สถานะ:</strong> ${sIcon} ${item.status || '-'}<br>
                 <strong>องค์กร:</strong> ${item.company || '-'}<br>
                 ${item.gmapsUrl ? `<a href="${item.gmapsUrl}" target="_blank" style="color: #dc2626; font-weight: bold; text-decoration: underline; margin-top: 4px; display: inline-block;">นำทาง Google Maps</a>` : ''}
